@@ -8,31 +8,39 @@ import { removeChat, shareChat } from '@/app/actions'
 import { SidebarActions } from '@/components/sidebar-actions'
 import { SidebarItem } from '@/components/sidebar-item'
 
-interface SidebarItemsProps {
-  chats?: Chat[]
+export interface Thought {
+  content: string
 }
 
-export function SidebarItems({ chats }: SidebarItemsProps) {
-  if (!chats?.length) return null
+export interface Context {
+  id: number
+  name: string
+  ownerId: string
+  thoughts: Thought[]
+  path: string
+}
+
+interface SidebarItemsProps {
+  contexts?: Context[]
+}
+
+export function SidebarItems({ contexts }: SidebarItemsProps) {
+  if (!contexts?.length) return null
 
   return (
     <AnimatePresence>
-      {chats.map(
-        (chat, index) =>
-          chat && (
+      {contexts.map(
+        (context, index) =>
+          context && (
             <motion.div
-              key={chat?.id}
+              key={context?.id}
               exit={{
                 opacity: 0,
                 height: 0
               }}
             >
-              <SidebarItem index={index} chat={chat}>
-                <SidebarActions
-                  chat={chat}
-                  removeChat={removeChat}
-                  shareChat={shareChat}
-                />
+              <SidebarItem index={index} context={context}>
+               <></>
               </SidebarItem>
             </motion.div>
           )

@@ -52,6 +52,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  contexts      Context[]
 }
 
 model VerificationToken {
@@ -80,7 +81,14 @@ model Membership {
 
 model Context {
   id       Int       @id @default(autoincrement())
+  name     String
   thoughts Thought[]
+  owner     User    @relation(fields: [ownerId], references: [id])
+  ownerId   String
+
+  @@unique([ownerId, name])
+
+
 }
 
 model Thought {

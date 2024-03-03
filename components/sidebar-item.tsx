@@ -17,21 +17,22 @@ import {
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 import { type Chat } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import {Context} from "@/components/sidebar-items";
 
 interface SidebarItemProps {
   index: number
-  chat: Chat
+  context: Context
   children: React.ReactNode
 }
 
-export function SidebarItem({ index, chat, children }: SidebarItemProps) {
+export function SidebarItem({ index, context, children }: SidebarItemProps) {
   const pathname = usePathname()
 
-  const isActive = pathname === chat.path
+  const isActive = pathname === context.path
   const [newChatId, setNewChatId] = useLocalStorage('newChatId', null)
   const shouldAnimate = index === 0 && isActive && newChatId
 
-  if (!chat?.id) return null
+  if (!context?.id) return null
 
   return (
     <motion.div
@@ -53,23 +54,9 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
         ease: 'easeIn'
       }}
     >
-      <div className="absolute left-2 top-1 flex size-6 items-center justify-center">
-        {chat.sharePath ? (
-          <Tooltip delayDuration={1000}>
-            <TooltipTrigger
-              tabIndex={-1}
-              className="focus:bg-muted focus:ring-1 focus:ring-ring"
-            >
-              <IconUsers className="mr-2" />
-            </TooltipTrigger>
-            <TooltipContent>This is a shared chat.</TooltipContent>
-          </Tooltip>
-        ) : (
-          <IconMessage className="mr-2" />
-        )}
-      </div>
+
       <Link
-        href={chat.path}
+        href={context.path}
         className={cn(
           buttonVariants({ variant: 'ghost' }),
           'group w-full px-8 transition-colors hover:bg-zinc-200/40 dark:hover:bg-zinc-300/10',
@@ -78,11 +65,11 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
       >
         <div
           className="relative max-h-5 flex-1 select-none overflow-hidden text-ellipsis break-all"
-          title={chat.title}
+          title={context.name}
         >
           <span className="whitespace-nowrap">
             {shouldAnimate ? (
-              chat.title.split('').map((character, index) => (
+              context.name.split('').map((character, index) => (
                 <motion.span
                   key={index}
                   variants={{
@@ -104,7 +91,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
                     staggerChildren: 0.05
                   }}
                   onAnimationComplete={() => {
-                    if (index === chat.title.length - 1) {
+                    if (index === context.name.length - 1) {
                       setNewChatId(null)
                     }
                   }}
@@ -113,7 +100,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
                 </motion.span>
               ))
             ) : (
-              <span>{chat.title}</span>
+              <span>{context.name}</span>
             )}
           </span>
         </div>

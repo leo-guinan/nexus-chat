@@ -6,6 +6,10 @@ import {kv} from '@vercel/kv'
 
 import {auth} from '@/auth'
 import {type Chat} from '@/lib/types'
+import {PrismaClient} from "@prisma/client/edge";
+import {withAccelerate} from "@prisma/extension-accelerate";
+
+const prisma = new PrismaClient().$extends(withAccelerate())
 
 export async function getChats(userId?: string | null) {
     if (!userId) {
@@ -129,7 +133,7 @@ export async function shareChat(id: string) {
 }
 
 
-export async function getContext(contextId: string, userId: string) {
+export async function getContext(contextName: string, userId: string) {
     const session = await auth()
     console.log("getContext Session", session)
     if (!session?.user?.id) {
@@ -137,23 +141,69 @@ export async function getContext(contextId: string, userId: string) {
             error: 'Unauthorized'
         }
     }
+    const context = await prisma.context.findUnique({
+        where: {
+            ownerId_name: {
+                ownerId: userId,
+                name: contextName
+            }
+        }
+    })
 
-    return {
-        title: "title",
-        userId: "1",
-        id: "12345",
-        thoughts: []
-    }
+    if (context) return context
+
+    return await prisma.context.create({
+        data: {
+            name: contextName,
+            owner: {
+                connect: {
+                    id: userId
+                }
+            }
+        }
+    })
+
+
 }
 
-export async function getContexts(userId: number) {
-    const session = await auth()
+export async function getContexts(userId?: string | null) {
 
-    if (!session?.user?.id) {
-        return {
-            error: 'Unauthorized'
-        }
+    if (!userId) {
+        return []
     }
+
+    const contexts = await prisma.context.findMany({
+        where: {
+            ownerId: userId
+        },
+        include: {
+            thoughts: true
+        }
+    })
+
+    if (contexts.length > 0) return contexts.map((context) => {
+        return {
+            ...context,
+            path: `/context/${context.id}`
+        }
+    })
+
+    const context = await prisma.context.create({
+        data: {
+            name: "Default",
+            owner: {
+                connect: {
+                    id: userId
+                }
+            }
+        }
+    })
+
+    return [{
+        ...context,
+        thoughts: [],
+        path: `/context/${context.id}`
+    }]
 
 
 }
