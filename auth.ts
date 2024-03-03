@@ -59,13 +59,26 @@ export const {
             if (communities.length === 0) {
                 const community = await prisma.community.create({
                     data: {
-                        creatorId: user.id
+                        creator: {
+                            connect: {
+                                id: user.id
+                            }
+                        }
                     }
                 })
                 await prisma.membership.create({
                     data: {
-                        memberId: user.id,
-                        communityId: community.id
+                        member: {
+                            connect: {
+                                id: user.id
+                            }
+                        },
+                        community: {
+                            connect: {
+                                id: community.id
+                            }
+                        }
+
                     }
                 })
             }
