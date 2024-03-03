@@ -12,5 +12,5 @@ export default async function IndexPage() {
 
   if ('error' in context) return null
 
-  return <ThoughtContext contextName={context.name} />
+  return <ThoughtContext contextId={context.id} contextName={context.name} />
 }
