@@ -23,8 +23,11 @@ export async function generateMetadata({
   }
 
   const context = await getContext(params.id, session.user.id)
+  if ('error' in context) {
+    return {}
+  }
   return {
-    title: context?.title?.toString().slice(0, 50) ?? 'Chat'
+    title: context?.name?.toString().slice(0, 50) ?? 'Chat'
   }
 }
 
@@ -36,9 +39,8 @@ export default async function ChatPage({ params }: ContextPageProps) {
   }
 
   const context = await getContext(params.id, session.user.id)
-
-  if (!context) {
-    notFound()
+  if (context && 'error' in context) {
+    return null
   }
   // console.log("contextUserId", context?.userId)
   // console.log("session.user.id", session?.user?.id)
@@ -46,5 +48,5 @@ export default async function ChatPage({ params }: ContextPageProps) {
   //   notFound()
   // }
 
-  return <ThoughtContext id={context?.id} initialThoughts={context.thoughts} />
+  return <ThoughtContext contextId={context.id} contextName={context.name} initialThoughts={context.thoughts} />
 }

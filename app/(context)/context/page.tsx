@@ -1,8 +1,16 @@
 import { nanoid } from '@/lib/utils'
 import {ThoughtContext} from "@/components/thought-context";
+import {getMostRecentContext} from "@/app/actions";
+import {auth} from "@/auth";
 
-export default function IndexPage() {
-  const id = nanoid()
+export default async function IndexPage() {
+    const session = await auth()
 
-  return <ThoughtContext id={id} />
+  if (!session) return null
+
+  const context = await getMostRecentContext(session.user.id)
+
+  if ('error' in context) return null
+
+  return <ThoughtContext contextName={context.name} />
 }

@@ -147,12 +147,15 @@ export async function getContext(contextName: string, userId: string) {
                 ownerId: userId,
                 name: contextName
             }
+        },
+        include: {
+            thoughts: true
         }
     })
 
     if (context) return context
 
-    return await prisma.context.create({
+    const newContext = await prisma.context.create({
         data: {
             name: contextName,
             owner: {
@@ -162,6 +165,11 @@ export async function getContext(contextName: string, userId: string) {
             }
         }
     })
+
+    return {
+        ...newContext,
+        thoughts: []
+    }
 
 
 }
@@ -205,5 +213,69 @@ export async function getContexts(userId?: string | null) {
         path: `/context/${context.id}`
     }]
 
+
+}
+
+export async function getMostRecentContext(userId: string) {
+    if (!userId) {
+        return {
+            error: "Unauthorized"
+        }
+    }
+
+    const context = await prisma.context.findFirst({
+        where: {
+            ownerId: userId
+        },
+        include: {
+            thoughts: true
+        }
+    })
+
+    if (context) return context
+    const newContext = await prisma.context.create({
+        data: {
+            name: "Default",
+            owner: {
+                connect: {
+                    id: userId
+                }
+            }
+        }
+    })
+    return {
+        ...newContext,
+        thoughts: []
+    }
+}
+
+export async function addThoughtToContext(contextId: number, thoughtContent: string) {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+        return {
+            error: "Unauthorized"
+        }
+    }
+
+    const newThought = await prisma.thought.create({
+        data: {
+            content: thoughtContent,
+            owner: {
+                connect: {
+                    id: session.user.id
+                }
+            },
+            context: {
+                connect: {
+                    id: contextId
+                }
+            }
+        }
+    })
+
+    return {
+        status: "success"
+    }
 
 }

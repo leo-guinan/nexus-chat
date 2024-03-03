@@ -3,30 +3,48 @@
 import {type Message} from 'ai/react'
 
 import {cn} from '@/lib/utils'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import ThoughtRecorder from "@/components/thought-recorder";
 import {Thought} from "@/components/thought";
+import {addThoughtToContext} from "@/app/actions";
 
 const IS_PREVIEW = process.env.VERCEL_ENV === 'preview'
 
-
-export interface ContextProps extends React.ComponentProps<'div'> {
-    initialThoughts?: string[]
-    id?: string
+export interface Thought {
+     ownerId: string;
+     id: number;
+     content: string;
+     contextId: number;
 }
 
-export function ThoughtContext({id, initialThoughts, className}: ContextProps) {
-    const [thoughts, setThoughts] = useState<string[]>([])
+export interface ContextProps extends React.ComponentProps<'div'> {
+    initialThoughts?: Thought[]
+    contextName: string
+    contextId: number
+}
 
-    const rememberThought = (thought: string) => {
+export function ThoughtContext({contextId, contextName, initialThoughts, className}: ContextProps) {
+    const [thoughts, setThoughts] = useState<string[]>()
+
+    useEffect(() => {
+        const newThoughts = initialThoughts?.map((thought) => thought.content) ?? []
+        setThoughts(newThoughts)
+    }, [initialThoughts])
+
+    const rememberThought = async (thought: string) => {
+        await addThoughtToContext(contextId, thought)
         console.log(thought)
-        setThoughts([thought, ...thoughts])
+        if (thoughts) {
+            setThoughts([thought, ...thoughts])
+        } else {
+            setThoughts([thought])
+        }
     }
 
     return (
         <>
             <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
-                {thoughts.map((thought) => (
+                {thoughts?.map((thought) => (
                     <>
                         <Thought thought={thought} />
                     </>
