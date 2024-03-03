@@ -8,6 +8,11 @@ import {auth} from '@/auth'
 import {type Chat} from '@/lib/types'
 import {PrismaClient} from "@prisma/client/edge";
 import {withAccelerate} from "@prisma/extension-accelerate";
+import {Pinecone, PineconeRecord} from '@pinecone-database/pinecone'
+import {Document, MarkdownTextSplitter, RecursiveCharacterTextSplitter} from "@pinecone-database/doc-splitter";
+import {getEmbeddings} from "@/utils/embeddings";
+import md5 from "md5";
+import {chunkedUpsert} from "@/utils/chunkedUpsert";
 
 const prisma = new PrismaClient().$extends(withAccelerate())
 
@@ -249,6 +254,41 @@ export async function getMostRecentContext(userId: string) {
     }
 }
 
+type DocumentSplitter = RecursiveCharacterTextSplitter | MarkdownTextSplitter
+
+async function embedDocument(doc: Document): Promise<PineconeRecord> {
+    try {
+        // Generate OpenAI embeddings for the document content
+        const embedding = await getEmbeddings(doc.pageContent);
+
+        // Create a hash of the document content
+        const hash = md5(doc.pageContent);
+
+        // Return the vector embedding object
+        return {
+            id: hash, // The ID of the vector is the hash of the document content
+            values: embedding, // The vector values are the OpenAI embeddings
+            metadata: { // The metadata includes details about the document
+                chunk: doc.pageContent, // The chunk of text that the vector represents
+                text: doc.metadata.text as string, // The text of the document
+                url: doc.metadata.url as string, // The URL where the document was found
+                hash: doc.metadata.hash as string // The hash of the document content
+            }
+        } as PineconeRecord;
+    } catch (error) {
+        console.log("Error embedding document: ", error)
+        throw error
+    }
+}
+
+type ThoughtMetadata = {
+    thoughtId: number
+    contextId: number
+    userId: string
+    hash: string
+
+}
+
 export async function addThoughtToContext(contextId: number, thoughtContent: string) {
     const session = await auth()
 
@@ -273,6 +313,47 @@ export async function addThoughtToContext(contextId: number, thoughtContent: str
             }
         }
     })
+
+    try {
+        const pc = new Pinecone();
+        const index = pc.index(process.env.PINECONE_INDEX as string);
+
+        if (!index) {
+            await pc.createIndex({
+                name: process.env.PINECONE_INDEX as string,
+                dimension: 1536,
+                waitUntilReady: true,
+                spec: {
+                    serverless: {
+                        cloud: 'aws',
+                        region: 'us-west-2',
+                    },
+                },
+            });
+        }
+
+        const hash = md5(thoughtContent);
+
+
+        // Get the vector embeddings for the documents
+        const doc = new Document({
+            pageContent: thoughtContent,
+            metadata: {
+                thoughtId: newThought.id,
+                contextId,
+                userId: session.user.id,
+                hash
+            }
+        })
+        const vectors = [await embedDocument(doc)]
+
+        // Upsert vectors into the Pinecone index
+        await chunkedUpsert(index!, vectors, 'myaicofounderv2', 10);
+
+    } catch (error) {
+        console.error("Error seeding:", error);
+        throw error;
+    }
 
     return {
         status: "success"
