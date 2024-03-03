@@ -3,7 +3,7 @@ import {Fragment} from 'react'
 import {Dialog, Transition} from '@headlessui/react'
 import {CheckIcon} from '@heroicons/react/24/outline'
 import {PromptForm} from "@/components/prompt-form";
-import {type Message, useChat} from "ai/react/dist";
+import {type Message, useChat} from "ai/react";
 import {toast} from "react-hot-toast";
 import {usePathname, useRouter} from "next/navigation";
 import {useLocalStorage} from "@/lib/hooks/use-local-storage";
