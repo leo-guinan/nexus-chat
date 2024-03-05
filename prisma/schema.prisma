@@ -46,7 +46,7 @@ model User {
   email         String       @unique
   emailVerified DateTime?
   name          String?
-  role          String   @default("user")
+  role          String       @default("user")
   thoughts      Thought[]
   communities   Community[]
   memberships   Membership[]
@@ -81,12 +81,12 @@ model Membership {
 }
 
 model Context {
-  id       Int       @id @default(autoincrement())
-  name     String
-  thoughts Thought[]
-  owner    User      @relation(fields: [ownerId], references: [id])
-  ownerId  String
-  tools    Tool[]
+  id            Int             @id @default(autoincrement())
+  name          String
+  thoughts      Thought[]
+  owner         User            @relation(fields: [ownerId], references: [id])
+  ownerId       String
+  ToolToContext ToolToContext[]
 
   @@unique([ownerId, name])
 }
@@ -101,16 +101,22 @@ model Thought {
 }
 
 model Tool {
-  id Int @id @default(autoincrement())
-  url String
-  name String
-  description String?
-  pattern String?
-  slug   String @unique
-  contexts Context[]
-
+  id            Int             @id @default(autoincrement())
+  url           String
+  name          String
+  description   String?
+  pattern       String?
+  slug          String          @unique
+  ToolToContext ToolToContext[]
 }
 
+model ToolToContext {
+  id        Int     @id @default(autoincrement())
+  tool      Tool    @relation(fields: [toolId], references: [id])
+  toolId    Int
+  context   Context @relation(fields: [contextId], references: [id])
+  contextId Int
+}
 
 enum Trigger {
   SCHEDULED

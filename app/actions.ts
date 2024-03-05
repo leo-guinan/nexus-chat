@@ -290,6 +290,23 @@ type ThoughtMetadata = {
 
 }
 
+type Tool = {
+    id: number
+    name: string
+    slug: string
+    description?: string | null
+    url: string
+}
+
+async function runTool(tool: Tool, thought: string, userId: string) {
+
+    await fetch(tool.url, {
+        body: JSON.stringify({thought, user_id: userId}),
+        method: "POST"
+    })
+
+}
+
 export async function addThoughtToContext(contextId: number, thoughtContent: string) {
     const session = await auth()
 
@@ -350,6 +367,22 @@ export async function addThoughtToContext(contextId: number, thoughtContent: str
 
         // Upsert vectors into the Pinecone index
         await chunkedUpsert(index!, vectors, 'myaicofounderv2', 10);
+
+        const toolsToContext = await prisma.toolToContext.findMany({
+            where: {
+                contextId
+            },
+            include: {
+                tool: true
+            }
+        });
+
+        (async function loop() {
+            for (let i = 0; i < toolsToContext.length; i++) {
+                const tool = toolsToContext[i].tool
+                await runTool(tool, thoughtContent, session.user.id);
+            }
+        })();
 
     } catch (error) {
         console.error("Error seeding:", error);
@@ -416,7 +449,7 @@ export async function getTools() {
 
 }
 
-export async function addTool(name: string, description:string, url: string, pattern: string) {
+export async function addTool(name: string, description: string, url: string, pattern: string) {
     const session = await auth()
 
     if (!session?.user?.id) {
@@ -436,17 +469,18 @@ export async function addTool(name: string, description:string, url: string, pat
             error: "Unauthorized"
         }
     }
+    let slug = encodeURIComponent(name)
 
 
     let slugMatchingName = await prisma.tool.findFirst({
         where: {
-            slug: name
+            slug
         }
     })
-    let slug = name
+    // need to make slug url-safe...
 
     while (slugMatchingName) {
-        const newSlug = (name + nanoid())
+        const newSlug = encodeURIComponent(name + nanoid())
         slugMatchingName = await prisma.tool.findFirst({
             where: {
                 slug: newSlug
