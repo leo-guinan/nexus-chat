@@ -1,4 +1,5 @@
 'use server'
+import {nanoid} from '@/lib/utils'
 
 import {revalidatePath} from 'next/cache'
 import {redirect} from 'next/navigation'
@@ -359,4 +360,120 @@ export async function addThoughtToContext(contextId: number, thoughtContent: str
         status: "success"
     }
 
+}
+
+export async function getTool(slug: string) {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+        return {
+            error: "Unauthorized"
+        }
+    }
+
+    const currentUser = await prisma.user.findFirst({
+        where: {
+            id: session.user.id
+        }
+    })
+
+    if (!currentUser || currentUser.role !== 'admin') {
+        return {
+            error: "Unauthorized"
+        }
+    }
+
+    return {
+        name: slug,
+        slug,
+        description: slug,
+        url: "http://localhost:8000/url/to/tool",
+    }
+}
+
+export async function getTools() {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+        return {
+            error: "Unauthorized"
+        }
+    }
+
+    const currentUser = await prisma.user.findFirst({
+        where: {
+            id: session.user.id
+        }
+    })
+
+    if (!currentUser || currentUser.role !== 'admin') {
+        return {
+            error: "Unauthorized"
+        }
+    }
+
+    return await prisma.tool.findMany()
+
+}
+
+export async function addTool(name: string, description:string, url: string, pattern: string) {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+        return {
+            error: "Unauthorized"
+        }
+    }
+
+    const currentUser = await prisma.user.findFirst({
+        where: {
+            id: session.user.id
+        }
+    })
+
+    if (!currentUser || currentUser.role !== 'admin') {
+        return {
+            error: "Unauthorized"
+        }
+    }
+
+
+    let slugMatchingName = await prisma.tool.findFirst({
+        where: {
+            slug: name
+        }
+    })
+    let slug = name
+
+    while (slugMatchingName) {
+        const newSlug = (name + nanoid())
+        slugMatchingName = await prisma.tool.findFirst({
+            where: {
+                slug: newSlug
+            }
+        })
+        if (!slugMatchingName) {
+            slug = newSlug
+        }
+    }
+
+    const newTool = await prisma.tool.create({
+        data: {
+            name,
+            description,
+            url,
+            pattern,
+            slug
+        }
+    })
+
+    if (newTool) {
+        return {
+            status: "Success"
+        }
+    }
+
+    return {
+        status: "Error"
+    }
 }
