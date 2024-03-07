@@ -301,7 +301,7 @@ type Tool = {
 async function runTool(tool: Tool, thought: string, userId: string) {
 
     await fetch(tool.url, {
-        body: JSON.stringify({thought, user_id: userId}),
+        body: JSON.stringify({message: thought, user_id: userId}),
         method: "POST"
     })
 
