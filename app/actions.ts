@@ -14,6 +14,7 @@ import {Document, MarkdownTextSplitter, RecursiveCharacterTextSplitter} from "@p
 import {getEmbeddings} from "@/utils/embeddings";
 import md5 from "md5";
 import {chunkedUpsert} from "@/utils/chunkedUpsert";
+import {matchThought} from "@/utils/openai/match-thought";
 
 const prisma = new PrismaClient().$extends(withAccelerate())
 
@@ -296,9 +297,26 @@ type Tool = {
     slug: string
     description?: string | null
     url: string
+    pattern?: string | null
+}
+
+async function doesThoughtMatchPattern(thought: string, pattern: string) {
+    return await matchThought(thought, pattern)
 }
 
 async function runTool(tool: Tool, thought: string, userId: string) {
+    if (tool.pattern) {
+        const matchesPattern = await doesThoughtMatchPattern(thought, tool.pattern)
+        if (matchesPattern) {
+            await fetch(tool.url, {
+                body: JSON.stringify({message: thought, user_id: userId}),
+                method: "POST"
+            })
+        }
+        return
+
+    }
+
 
     await fetch(tool.url, {
         body: JSON.stringify({message: thought, user_id: userId}),
@@ -477,7 +495,6 @@ export async function addTool(name: string, description: string, url: string, pa
             slug
         }
     })
-    // need to make slug url-safe...
 
     while (slugMatchingName) {
         const newSlug = encodeURIComponent(name + nanoid())
