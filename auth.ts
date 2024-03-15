@@ -48,12 +48,29 @@ export const {
             return !!auth?.user // this ensures there is a logged in user for -every- request
         },
         async signIn({user, account, profile, email, credentials}) {
+            if (!user.email) {
+                return false
+            }
             console.log(user)
             console.log("in signin callback")
+            let userObject = await prisma.user.findUnique({
+                where: {
+                    id: user.id
+                }
+            })
+            if (!userObject) {
+                userObject = await prisma.user.create({
+                    data: {
+                        id: user.id,
+                        email: user.email,
+                        image: user.image
+                    }
+                })
+            }
             // need to get user from database. If no community exists for that user, create one.
             const communities = await prisma.membership.findMany({
                 where: {
-                    memberId: user.id
+                    memberId: userObject.id
                 },
             })
 
