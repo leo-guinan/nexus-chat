@@ -48,6 +48,7 @@ export const {
             return !!auth?.user // this ensures there is a logged in user for -every- request
         },
         async signIn({user, account, profile, email, credentials}) {
+            console.log(user)
             console.log("in signin callback")
             // need to get user from database. If no community exists for that user, create one.
             const communities = await prisma.membership.findMany({
@@ -56,9 +57,6 @@ export const {
                 },
             })
 
-            console.log("communitites", communities)
-            console.log("length of communities", communities.length)
-            console.log(process.env)
             if (communities.length === 0) {
                 const community = await prisma.community.create({
                     data: {
