@@ -55,15 +55,15 @@ export const {
             console.log("in signin callback")
             let userObject = await prisma.user.findUnique({
                 where: {
-                    id: user.id
+                    email: user.email
                 }
             })
             if (!userObject) {
                 userObject = await prisma.user.create({
                     data: {
-                        id: user.id,
                         email: user.email,
-                        image: user.image
+                        image: user.image,
+                        name: user.name
                     }
                 })
             }
