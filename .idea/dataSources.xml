@@ -8,5 +8,12 @@
       <jdbc-url>jdbc:postgresql://localhost:5432/thoughts</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="flightcontrol@database-5r5h1lmr.clmxs752pn14.us-east-2.rds.amazonaws.com" uuid="e5d999d9-8ab5-472d-97f5-9885b4584cc7">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://database-5r5h1lmr.clmxs752pn14.us-east-2.rds.amazonaws.com:5432/flightcontrol</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

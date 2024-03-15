@@ -57,7 +57,8 @@ export const {
             })
 
             console.log("communitites", communities)
-
+            console.log("length of communities", communities.length)
+            console.log(process.env)
             if (communities.length === 0) {
                 const community = await prisma.community.create({
                     data: {
