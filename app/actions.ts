@@ -199,7 +199,7 @@ export async function getContexts(userId?: string | null) {
     if (contexts.length > 0) return contexts.map((context) => {
         return {
             ...context,
-            path: `/context/${context.id}`
+            path: `/context/${context.name}`
         }
     })
 
@@ -217,7 +217,7 @@ export async function getContexts(userId?: string | null) {
     return [{
         ...context,
         thoughts: [],
-        path: `/context/${context.id}`
+        path: `/context/${context.name}`
     }]
 
 
