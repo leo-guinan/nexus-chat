@@ -8,7 +8,7 @@ import {ThoughtContext} from "@/components/thought-context";
 
 export interface ContextPageProps {
   params: {
-    id: string
+    name: string
   }
 }
 
@@ -22,7 +22,7 @@ export async function generateMetadata({
     return {}
   }
 
-  const context = await getContext(params.id, session.user.id)
+  const context = await getContext(params.name, session.user.id)
   if ('error' in context) {
     return {}
   }
@@ -35,10 +35,10 @@ export default async function ChatPage({ params }: ContextPageProps) {
   const session = await auth()
 
   if (!session?.user) {
-    redirect(`/sign-in?next=/context/${params.id}`)
+    redirect(`/sign-in?next=/context/${params.name}`)
   }
 
-  const context = await getContext(params.id, session.user.id)
+  const context = await getContext(params.name, session.user.id)
   if (context && 'error' in context) {
     return null
   }
