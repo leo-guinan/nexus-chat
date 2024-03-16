@@ -47,62 +47,7 @@ export const {
         authorized({auth}) {
             return !!auth?.user // this ensures there is a logged in user for -every- request
         },
-        async signIn({user, account, profile, email, credentials}) {
-            if (!user.email) {
-                return false
-            }
-            console.log(user)
-            console.log("in signin callback")
-            let userObject = await prisma.user.findUnique({
-                where: {
-                    email: user.email
-                }
-            })
-            if (!userObject) {
-                userObject = await prisma.user.create({
-                    data: {
-                        email: user.email,
-                        image: user.image,
-                        name: user.name
-                    }
-                })
-            }
-            // need to get user from database. If no community exists for that user, create one.
-            const communities = await prisma.membership.findMany({
-                where: {
-                    memberId: userObject.id
-                },
-            })
 
-            if (communities.length === 0) {
-                const community = await prisma.community.create({
-                    data: {
-                        creator: {
-                            connect: {
-                                id: user.id
-                            }
-                        }
-                    }
-                })
-                await prisma.membership.create({
-                    data: {
-                        member: {
-                            connect: {
-                                id: user.id
-                            }
-                        },
-                        community: {
-                            connect: {
-                                id: community.id
-                            }
-                        }
-
-                    }
-                })
-            }
-
-            return true
-        }
     },
     pages: {
         signIn: '/sign-in' // overrides the next-auth default signin page https://authjs.dev/guides/basics/pages
