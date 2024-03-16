@@ -86,6 +86,7 @@ model Context {
   thoughts      Thought[]
   owner         User            @relation(fields: [ownerId], references: [id])
   ownerId       String
+  path          String?
   ToolToContext ToolToContext[]
 
   @@unique([ownerId, name])

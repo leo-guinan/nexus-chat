@@ -165,6 +165,7 @@ export async function getContext(contextName: string, userId: string) {
     const newContext = await prisma.context.create({
         data: {
             name: contextName,
+            path: encodeURIComponent(contextName.toLowerCase()),
             owner: {
                 connect: {
                     id: userId
@@ -199,13 +200,13 @@ export async function getContexts(userId?: string | null) {
     if (contexts.length > 0) return contexts.map((context) => {
         return {
             ...context,
-            path: `/context/${context.name}`
         }
     })
 
     const context = await prisma.context.create({
         data: {
             name: "Default",
+            path: "default",
             owner: {
                 connect: {
                     id: userId
@@ -217,7 +218,6 @@ export async function getContexts(userId?: string | null) {
     return [{
         ...context,
         thoughts: [],
-        path: `/context/${context.name}`
     }]
 
 
@@ -243,6 +243,7 @@ export async function getMostRecentContext(userId: string) {
     const newContext = await prisma.context.create({
         data: {
             name: "Default",
+            path: "default",
             owner: {
                 connect: {
                     id: userId
