@@ -16,3 +16,18 @@ export type ServerActionResult<Result> = Promise<
       error: string
     }
 >
+
+export interface Thought {
+    ownerId: string;
+    id: number;
+    content: string;
+    contextId: number;
+    createdAt: string;
+}
+
+export interface Task {
+    id: number;
+    name: string;
+    details: string;
+    priority: number;
+}

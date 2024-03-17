@@ -1,5 +1,5 @@
 'use server'
-import {nanoid} from '@/lib/utils'
+import {formatDate, nanoid} from '@/lib/utils'
 
 import {revalidatePath} from 'next/cache'
 import {redirect} from 'next/navigation'
@@ -160,7 +160,15 @@ export async function getContext(contextName: string, userId: string) {
         }
     })
 
-    if (context) return context
+    if (context) return {
+        ...context,
+        thoughts: context.thoughts.map((thought) => {
+            return {
+                ...thought,
+                createdAt: formatDate(thought.createdAt),
+            }
+        })
+    }
 
     const newContext = await prisma.context.create({
         data: {
@@ -412,10 +420,13 @@ export async function addThoughtToContext(contextId: number, thoughtContent: str
         console.error("Error seeding:", error);
         throw error;
     }
-
-    return {
-        status: "success"
+    const createdThought = {
+        ...newThought,
+        createdAt: formatDate(newThought.createdAt),
     }
+
+    console.log("createdThought", createdThought)
+    return createdThought
 
 }
 

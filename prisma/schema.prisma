@@ -94,6 +94,7 @@ model Context {
 
 model Thought {
   id        Int     @id @default(autoincrement())
+  createdAt DateTime @default(now())
   content   String
   owner     User    @relation(fields: [ownerId], references: [id])
   ownerId   String
