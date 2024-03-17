@@ -110,6 +110,8 @@ model Tool {
   slug          String
   @@unique([url, slug])
   ToolToContext ToolToContext[]
+  triggers      Trigger[]
+
 }
 
 model ToolToContext {
@@ -124,4 +126,5 @@ enum Trigger {
   SCHEDULED
   ACTION
   EVENT
+  THOUGHT
 }

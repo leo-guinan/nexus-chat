@@ -7,7 +7,7 @@ import {kv} from '@vercel/kv'
 
 import {auth} from '@/auth'
 import {type Chat} from '@/lib/types'
-import {PrismaClient} from "@prisma/client/edge";
+import {PrismaClient, Trigger} from "@prisma/client/edge";
 import {withAccelerate} from "@prisma/extension-accelerate";
 import {Pinecone, PineconeRecord} from '@pinecone-database/pinecone'
 import {Document, MarkdownTextSplitter, RecursiveCharacterTextSplitter} from "@pinecone-database/doc-splitter";
@@ -307,7 +307,10 @@ async function doesThoughtMatchPattern(thought: string, pattern: string) {
 
 async function runTool(tool: Tool, thought: string, userId: string) {
     if (tool.pattern) {
+        console.log("Pattern exists, checking against it")
+
         const matchesPattern = await doesThoughtMatchPattern(thought, tool.pattern)
+        console.log(`${tool.name} matches pattern: ${matchesPattern}`)
         if (matchesPattern) {
             await fetch(tool.url, {
                 body: JSON.stringify({message: thought, user_id: userId}),
@@ -399,7 +402,9 @@ export async function addThoughtToContext(contextId: number, thoughtContent: str
         (async function loop() {
             for (let i = 0; i < toolsToContext.length; i++) {
                 const tool = toolsToContext[i].tool
-                await runTool(tool, thoughtContent, session.user.id);
+                if (tool.triggers.includes(Trigger.THOUGHT)) {
+                    await runTool(tool, thoughtContent, session.user.id);
+                }
             }
         })();
 
@@ -535,7 +540,7 @@ export async function getTasks(userId?: string | null) {
         where: {
             url_slug: {
                 slug: "tasks",
-                url: "http://localhost:8000/api/task/list/"
+                url: `${process.env.TASK_API_URL}/list/`
             }
 
         }
@@ -562,13 +567,9 @@ export async function getTasks(userId?: string | null) {
     return jsonResults.tasks
 
 
-
-
-
-
 }
 
-export async function prioritizeTasks(userId: string | null, taskPriorities:  {
+export async function prioritizeTasks(userId: string | null, taskPriorities: {
     taskId: number;
     priority: number;
 }[]) {
@@ -576,7 +577,7 @@ export async function prioritizeTasks(userId: string | null, taskPriorities:  {
         where: {
             url_slug: {
                 slug: "tasks",
-                url: "http://localhost:8000/api/task/prioritize/"
+                url: `${process.env.TASK_API_URL}/prioritize/`
             }
 
         }
@@ -602,10 +603,6 @@ export async function prioritizeTasks(userId: string | null, taskPriorities:  {
     const jsonResults = await status.json()
     console.log("status", jsonResults)
     return true
-
-
-
-
 
 
 }
