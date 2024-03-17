@@ -1,7 +1,5 @@
 'use client'
 
-import {type Message} from 'ai/react'
-
 import {cn} from '@/lib/utils'
 import React, {useEffect, useState} from 'react'
 import ThoughtRecorder from "@/components/thought-recorder";
@@ -11,10 +9,10 @@ import {addThoughtToContext} from "@/app/actions";
 const IS_PREVIEW = process.env.VERCEL_ENV === 'preview'
 
 export interface Thought {
-     ownerId: string;
-     id: number;
-     content: string;
-     contextId: number;
+    ownerId: string;
+    id: number;
+    content: string;
+    contextId: number;
 }
 
 export interface ContextProps extends React.ComponentProps<'div'> {
@@ -43,14 +41,16 @@ export function ThoughtContext({contextId, contextName, initialThoughts, classNa
 
     return (
         <>
+            <div className="p-4">
+                <ThoughtRecorder rememberThought={rememberThought}/>
+            </div>
             <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
                 {thoughts?.map((thought) => (
                     <>
-                        <Thought thought={thought} />
+                        <Thought thought={thought}/>
                     </>
                 ))}
             </div>
-            <ThoughtRecorder rememberThought={rememberThought}/>
 
 
         </>

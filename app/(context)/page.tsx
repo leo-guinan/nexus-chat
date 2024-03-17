@@ -1,6 +1,6 @@
 import { nanoid } from '@/lib/utils'
 import {ThoughtContext} from "@/components/thought-context";
-import {getMostRecentContext} from "@/app/actions";
+import {getContext, getMostRecentContext} from "@/app/actions";
 import {auth} from "@/auth";
 
 export default async function IndexPage() {
@@ -8,9 +8,9 @@ export default async function IndexPage() {
 
   if (!session) return null
 
-  const context = await getMostRecentContext(session.user.id)
+  const context = await getContext("Default", session.user.id)
 
   if ('error' in context) return null
 
-  return <ThoughtContext contextId={context.id} contextName={context.name} />
+  return <ThoughtContext contextId={context.id} contextName={context.name} initialThoughts={context.thoughts} />
 }
