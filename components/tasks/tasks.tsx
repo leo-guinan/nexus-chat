@@ -15,7 +15,7 @@ import {prioritizeTasks} from "@/app/actions";
 interface Task {
     id: number
     name: string
-    description: string
+    details: string
     priority: number
 }
 
