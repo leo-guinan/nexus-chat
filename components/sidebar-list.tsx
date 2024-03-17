@@ -1,7 +1,10 @@
 import {getChats, getContexts} from '@/app/actions'
-import {SidebarItems} from '@/components/sidebar-items'
 import {ThemeToggle} from '@/components/theme-toggle'
+import * as React from 'react'
 import {cache} from 'react'
+import Link from "next/link";
+import {cn} from "@/lib/utils";
+import {buttonVariants} from "@/components/ui/button";
 
 interface SidebarListProps {
     userId?: string
@@ -16,12 +19,21 @@ const loadContexts = cache(async (userId?: string) => {
     return await getContexts(userId)
 })
 
-export async function SidebarList({userId}: SidebarListProps) {
-    // const chats = await loadChats(userId)
-    const contexts = await loadContexts(userId)
+export async function SidebarList({userId: _}: SidebarListProps) {
 
     return (
         <div className="flex flex-1 flex-col overflow-hidden">
+            <div className="p-8 text-center">
+                <Link
+                    href={`/tasks`}
+                    className={cn(
+                        buttonVariants({variant: 'ghost'}),
+                        'group w-full px-8 transition-colors hover:bg-zinc-200/40 dark:hover:bg-zinc-300/10',
+                    )}
+                >
+                    Tasks
+                </Link>
+            </div>
             {/*<div className="p-8 text-center">Contexts</div>*/}
             {/*<div className="flex-1 overflow-auto">*/}
             {/*    {contexts?.length ? (*/}

@@ -107,7 +107,8 @@ model Tool {
   name          String
   description   String?
   pattern       String?
-  slug          String          @unique
+  slug          String
+  @@unique([url, slug])
   ToolToContext ToolToContext[]
 }
 

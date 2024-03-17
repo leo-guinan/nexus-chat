@@ -529,3 +529,83 @@ export async function addTool(name: string, description: string, url: string, pa
         status: "Error"
     }
 }
+
+export async function getTasks(userId?: string | null) {
+    const taskTool = await prisma.tool.findUnique({
+        where: {
+            url_slug: {
+                slug: "tasks",
+                url: "http://localhost:8000/api/task/list/"
+            }
+
+        }
+    })
+
+    console.log("taskTool", taskTool)
+
+    if (!taskTool || !userId) {
+        return []
+    }
+
+    const tasks = await fetch(taskTool?.url as string, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Api-Key ${process.env.TASK_API_KEY}`
+        },
+        body: JSON.stringify({
+            user_id: userId
+        })
+    })
+    const jsonResults = await tasks.json()
+    console.log("taskResults", jsonResults)
+    return jsonResults.tasks
+
+
+
+
+
+
+}
+
+export async function prioritizeTasks(userId: string | null, taskPriorities:  {
+    taskId: number;
+    priority: number;
+}[]) {
+    const prioritizeTasksTool = await prisma.tool.findUnique({
+        where: {
+            url_slug: {
+                slug: "tasks",
+                url: "http://localhost:8000/api/task/prioritize/"
+            }
+
+        }
+    })
+
+    console.log("prioritizeTasksTool", prioritizeTasksTool)
+
+    if (!prioritizeTasksTool || !userId) {
+        return []
+    }
+
+    const status = await fetch(prioritizeTasksTool?.url as string, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Api-Key ${process.env.TASK_API_KEY}`
+        },
+        body: JSON.stringify({
+            user_id: userId,
+            task_priorities: taskPriorities
+        })
+    })
+    const jsonResults = await status.json()
+    console.log("status", jsonResults)
+    return true
+
+
+
+
+
+
+}
