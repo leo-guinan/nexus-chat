@@ -10,6 +10,7 @@ export default async function IndexPage() {
 
   const context = await getContext("Default", session.user.id)
 
+
   if ('error' in context) return null
 
   return <ThoughtContext contextId={context.id} contextName={context.name} initialThoughts={context.thoughts} />
