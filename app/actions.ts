@@ -182,6 +182,26 @@ export async function getContext(contextName: string, userId: string) {
         }
     })
 
+    //if new context, add tools to context
+    const tools = await prisma.tool.findMany()
+
+    for (const tool of tools) {
+        await prisma.toolToContext.create({
+            data: {
+                context: {
+                    connect: {
+                        id: newContext.id
+                    }
+                },
+                tool: {
+                    connect: {
+                        id: tool.id
+                    }
+                }
+            }
+        })
+    }
+
     return {
         ...newContext,
         thoughts: []
