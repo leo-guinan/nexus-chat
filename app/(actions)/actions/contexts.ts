@@ -45,7 +45,7 @@ export async function getContext(contextName: string, userId: string) {
             }
         })
 
-        if (!extraData) return {
+        if (extraData.length === 0) return {
             ...context,
             thoughts: context.thoughts.map((thought) => {
                 return {
