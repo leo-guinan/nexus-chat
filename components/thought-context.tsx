@@ -4,8 +4,8 @@ import {cn} from '@/lib/utils'
 import React, {useEffect, useState} from 'react'
 import ThoughtRecorder from "@/components/thought-recorder";
 import {Thought} from "@/components/thought";
-import {addThoughtToContext} from "@/app/actions";
 import {Thought as ThoughtType} from "@/lib/types";
+import {addThoughtToContext} from "@/app/(actions)/actions/thoughts";
 const IS_PREVIEW = process.env.VERCEL_ENV === 'preview'
 
 

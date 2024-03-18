@@ -1,10 +1,11 @@
-import {getChats, getContexts} from '@/app/actions'
 import {ThemeToggle} from '@/components/theme-toggle'
 import * as React from 'react'
 import {cache} from 'react'
 import Link from "next/link";
 import {cn} from "@/lib/utils";
 import {buttonVariants} from "@/components/ui/button";
+import {getChats} from "@/app/(actions)/actions/chats";
+import {getContexts} from "@/app/(actions)/actions/contexts";
 
 interface SidebarListProps {
     userId?: string

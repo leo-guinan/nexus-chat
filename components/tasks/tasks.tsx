@@ -9,8 +9,8 @@ import {closestCenter, DndContext, useSensor, useSensors} from "@dnd-kit/core";
 import {SortableContext, sortableKeyboardCoordinates} from '@dnd-kit/sortable';
 import Task from "./task";
 import {useEffect, useState} from "react";
-import {completeTask, prioritizeTasks} from "@/app/actions";
 import {KeyboardSensor, PointerSensor, TouchSensor} from "@/utils/dnd/smart-sensors";
+import {completeTask, prioritizeTasks} from "@/app/(actions)/actions/tasks";
 
 
 interface Task {

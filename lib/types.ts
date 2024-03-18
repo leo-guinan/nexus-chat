@@ -31,3 +31,20 @@ export interface Task {
     details: string;
     priority: number;
 }
+
+export type ThoughtMetadata = {
+    thoughtId: number
+    contextId: number
+    userId: string
+    hash: string
+
+}
+
+export type Tool = {
+    id: number
+    name: string
+    slug: string
+    description?: string | null
+    url: string
+    pattern?: string | null
+}

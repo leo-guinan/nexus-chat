@@ -1,6 +1,8 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import {customAlphabet} from "nanoid";
+import {PrismaClient} from "@prisma/client/edge";
+import {withAccelerate} from "@prisma/extension-accelerate";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -41,3 +43,5 @@ export function formatDate(input: string | number | Date): string {
     year: 'numeric'
   })
 }
+
+export const prisma = new PrismaClient().$extends(withAccelerate())

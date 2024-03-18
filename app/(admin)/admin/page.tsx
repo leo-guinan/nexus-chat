@@ -1,7 +1,6 @@
 import {auth} from "@/auth";
-import Tasks from "@/components/tasks/tasks";
-import {getTasks, isUserAdmin} from "@/app/actions";
 import AdminDashboard from "@/components/admin/admin-dashboard";
+import {isUserAdmin} from "@/app/(actions)/actions/admin";
 
 export default async function IndexPage() {
     const session = await auth()
@@ -13,5 +12,5 @@ export default async function IndexPage() {
 
     if (!isAdmin) return null
 
-    return <AdminDashboard />
+    return <AdminDashboard/>
 }

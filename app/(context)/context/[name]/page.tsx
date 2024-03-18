@@ -2,9 +2,9 @@ import { type Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
-import {getChat, getContext} from '@/app/actions'
 import { Chat } from '@/components/chat'
 import {ThoughtContext} from "@/components/thought-context";
+import {getContext} from "@/app/(actions)/actions/contexts";
 
 export interface ContextPageProps {
   params: {
