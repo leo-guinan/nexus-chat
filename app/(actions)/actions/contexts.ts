@@ -45,6 +45,16 @@ export async function getContext(contextName: string, userId: string) {
             }
         })
 
+        if (!extraData) return {
+            ...context,
+            thoughts: context.thoughts.map((thought) => {
+                return {
+                    ...thought,
+                    createdAt: formatDate(thought.createdAt),
+                }
+            })
+        }
+
         console.log("extraData", extraData)
 
         const thoughts = extraData.map((membership) => {
