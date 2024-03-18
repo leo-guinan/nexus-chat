@@ -5,11 +5,12 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 import {Card, CardContent, CardHeader} from "@/components/ui/card"
-import {closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
+import {closestCenter, DndContext, useSensor, useSensors} from "@dnd-kit/core";
 import {SortableContext, sortableKeyboardCoordinates} from '@dnd-kit/sortable';
 import Task from "./task";
 import {useEffect, useState} from "react";
-import {prioritizeTasks} from "@/app/actions";
+import {completeTask, prioritizeTasks} from "@/app/actions";
+import {KeyboardSensor, PointerSensor, TouchSensor} from "@/utils/dnd/smart-sensors";
 
 
 interface Task {
@@ -31,7 +32,8 @@ export default function Tasks({initialTasks, userId}: TasksProps) {
 
     const sensors = useSensors(
         useSensor(PointerSensor),
-        useSensor(KeyboardSensor, {coordinateGetter: sortableKeyboardCoordinates})
+        useSensor(KeyboardSensor, {coordinateGetter: sortableKeyboardCoordinates}),
+        useSensor(TouchSensor)
     );
 
     const handleDragEnd = (event: any) => {
@@ -59,6 +61,14 @@ export default function Tasks({initialTasks, userId}: TasksProps) {
 
     }, [prioritizedTasks, userId])
 
+    const handleCompleteTask = async (id: number) => {
+        console.log("completing task with id", id)
+        await completeTask(userId, id)
+        setPrioritizedTasks((tasks) => {
+            return tasks.filter(task => task.id !== id)
+        })
+    }
+
     return (
         <div className="grid gap-4 w-full lg:grid-cols-2">
             <div className="space-y-4">
@@ -75,7 +85,7 @@ export default function Tasks({initialTasks, userId}: TasksProps) {
                         >
                             <SortableContext items={prioritizedTasks}>
                                 {prioritizedTasks.map((task) => (
-                                    <Task task={task} key={task.id}/>
+                                    <Task task={task} key={task.id} onComplete={handleCompleteTask}/>
                                 ))}
                             </SortableContext>
                         </DndContext>

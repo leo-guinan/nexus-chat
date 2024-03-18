@@ -1,4 +1,6 @@
 import SortableItem from "@/components/sortable-item";
+import {Button} from "@/components/ui/button";
+import {SyntheticEvent} from "react";
 
 interface TaskProps {
     task: {
@@ -6,10 +8,17 @@ interface TaskProps {
         name: string;
         details: string;
         priority: number;
-    }
+    },
+    onComplete: (id: number) => Promise<void>;
 }
 
-export default function Task({task}: TaskProps) {
+export default function Task({task, onComplete}: TaskProps) {
+
+    const handleClick = async (e: SyntheticEvent) => {
+        e.preventDefault()
+        console.log("handling click")
+         await onComplete(task.id)
+    }
 
     return (
         <SortableItem id={task.id}>
@@ -21,10 +30,10 @@ export default function Task({task}: TaskProps) {
                         <p className="text-sm leading-none text-gray-500">{task.details}</p>
                     </div>
                     <div>
-                        <div className="p-2 rounded-full hover:bg-gray-100">
-                            <div className="size-4 text-gray-400"/>
+
+                        <div className="min-w-[140px]" data-no-dnd="true">
+                            <Button size="sm" onClick={handleClick}>Mark as Complete</Button>
                         </div>
-                        {/*<div className="min-w-[140px]">*/}
                         {/*    <div>*/}
                         {/*        <div className="size-4 mr-2"/>*/}
                         {/*        Edit*/}
