@@ -3,14 +3,13 @@ import {Fragment} from 'react'
 import {Dialog, Transition} from '@headlessui/react'
 import {CheckIcon} from '@heroicons/react/24/outline'
 import {type Message} from "ai/react";
-import {Input} from "@/components/ui/input"
-import {Button} from "@/components/ui/button"
 import {Thought} from "@/lib/types";
 import {findRelatedThoughts} from "@/app/(actions)/actions/thoughts";
 import {generateDocument} from "@/app/(actions)/actions/documents";
 import Link from "next/link";
 import LoadingSpinner from "@/components/loading-spinner";
-import SelectableThought from "@/components/selectable-thought";
+import Intent from "@/components/intent";
+import SelectThoughts from "@/components/select-thoughts";
 
 export interface ChatModalProps extends React.ComponentProps<'div'> {
     initialMessages?: Message[]
@@ -159,45 +158,17 @@ export function DoSomethingModal({open, setOpen, id, initialThoughts, className}
                                                         </Dialog.Title>
                                                         <div>
                                                             {!readyToWork && (
-                                                                <div className="mt-4 flex w-full">
-
-                                                                    <Input className="flex-1 w-full sm:w-auto"
-                                                                           placeholder="What do you want to do"
-                                                                           type="search"
-                                                                           value={whatToDo}
-                                                                           onChange={(e) => setWhatToDo(e.target.value)}/>
-                                                                    <Button className="ml-2" variant="outline"
-                                                                            onClick={clearSearch}>
-                                                                        Clear
-                                                                    </Button>
-
-                                                                    <Button className="ml-2"
-                                                                            onClick={searchForMatchingThoughts}>
-                                                                        Create Plan
-                                                                    </Button>
-                                                                </div>
+                                                                <Intent clearSearch={clearSearch}
+                                                                        searchForMatchingThoughts={searchForMatchingThoughts}
+                                                                        setWhatToDo={setWhatToDo} whatToDo={whatToDo}/>
                                                             )}
 
                                                             {readyToWork && (
-                                                                <>
-                                                                    <div className="p-0">
-                                                                        <div
-                                                                            className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4">
-                                                                            {matchedThoughts.map((thought) => (
-                                                                                <SelectableThought key={thought.id}
-                                                                                                   thought={thought}
-                                                                                                   handleChange={handleCheckChange}
-                                                                                                   selected={!!checkedThoughts.find((value) => value.id === thought.id)}/>
-                                                                            ))}
-                                                                        </div>
-                                                                    </div>
-                                                                    <div>
-                                                                        <Button variant="outline"
-                                                                                onClick={handleClose}>Cancel</Button>
-                                                                        <Button className="ml-2"
-                                                                                onClick={createDocument}>Confirm</Button>
-                                                                    </div>
-                                                                </>
+                                                                <SelectThoughts matchedThoughts={matchedThoughts}
+                                                                                handleCheckChange={handleCheckChange}
+                                                                                checkedThoughts={checkedThoughts}
+                                                                                handleClose={handleClose}
+                                                                                createDocument={createDocument}/>
                                                             )}
 
                                                         </div>
@@ -226,15 +197,15 @@ export function DoSomethingModal({open, setOpen, id, initialThoughts, className}
 
                                                     </div>
                                                 </div>
-                                                <div className="mt-5 sm:mt-6">
-                                                    <button
-                                                        type="button"
-                                                        className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        onClick={handleClose}
-                                                    >
-                                                        Back
-                                                    </button>
-                                                </div>
+                                                {/*<div className="mt-5 sm:mt-6">*/}
+                                                {/*    <button*/}
+                                                {/*        type="button"*/}
+                                                {/*        className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"*/}
+                                                {/*        onClick={handleClose}*/}
+                                                {/*    >*/}
+                                                {/*        Back*/}
+                                                {/*    </button>*/}
+                                                {/*</div>*/}
                                             </>
                                         )}
                                         {documentUrl && (
