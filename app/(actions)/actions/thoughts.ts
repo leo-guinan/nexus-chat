@@ -169,3 +169,62 @@ export async function findRelatedThoughts(initialThoughts: Thought[], thingToDo:
         }
     })
 }
+
+export async function filterThoughts(contextId: number, thoughtFilter: string) {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+        return {
+            error: "Unauthorized"
+        }
+    }
+
+    const pc = new Pinecone();
+    const index = pc.index(process.env.PINECONE_INDEX as string).namespace('myaicofounderv2');
+
+    if (!index) {
+        return {
+            error: "No index"
+        }
+    }
+
+    const lookupVector = await getEmbeddings(thoughtFilter);
+
+    const relatedThoughtVectors = await index.query({
+        vector: lookupVector,
+        topK: 5,
+        includeMetadata: true,
+        filter: {
+            userId: {
+                $eq: session.user.id
+            }
+        },
+    });
+
+    console.log("relatedThoughtVectors", relatedThoughtVectors)
+
+    const relatedThoughts = []
+
+    for (let i = 0; i < relatedThoughtVectors.matches.length; i++) {
+        const thoughtId = relatedThoughtVectors.matches[i]?.metadata?.thoughtId
+        const thought = await prisma.thought.findUnique({
+            where: {
+                id: thoughtId as number,
+            }
+        })
+
+        if (!thought) {
+            continue
+        }
+
+        relatedThoughts.push(thought)
+    }
+
+    console.log("relatedThoughts", relatedThoughts)
+    return relatedThoughts.map((relatedThought) => {
+        return {
+            ...relatedThought,
+            createdAt: formatDate(relatedThought.createdAt),
+        }
+    });
+}
