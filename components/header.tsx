@@ -14,6 +14,7 @@ import { UserMenu } from '@/components/user-menu'
 import { SidebarMobile } from './sidebar-mobile'
 import { SidebarToggle } from './sidebar-toggle'
 import { ChatHistory } from './chat-history'
+import {ContextSidebar} from "@/components/context-sidebar";
 
 async function UserOrLogin() {
   const session = await auth()
@@ -22,14 +23,13 @@ async function UserOrLogin() {
       {session?.user ? (
         <>
           <SidebarMobile>
-            <ChatHistory userId={session.user.id} />
+              <ContextSidebar userId={session.user.id} />
           </SidebarMobile>
           <SidebarToggle />
         </>
       ) : (
         <Link href="/" target="_blank" rel="nofollow">
-          <IconNextChat className="size-6 mr-2 dark:hidden" inverted />
-          <IconNextChat className="hidden size-6 mr-2 dark:block" />
+          Home
         </Link>
       )}
       <div className="flex items-center">

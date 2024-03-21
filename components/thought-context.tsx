@@ -52,11 +52,11 @@ export function ThoughtContext({contextId, contextName, initialThoughts, classNa
             <div className="p-4">
                 <ThoughtRecorder rememberThought={rememberThought}/>
             </div>
-            <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
-                {thoughts?.map((thought) => (
-                    <>
+            <div className={`flex flex-wrap ${className}`} style={{ gap: '1rem' }}>
+                {thoughts?.map((thought, index) => (
+                    <div key={index} className='w-full sm:w-1/2 lg:w-1/4 p-2'>
                         <Thought thought={thought}/>
-                    </>
+                    </div>
                 ))}
             </div>
 
