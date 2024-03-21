@@ -71,12 +71,16 @@ export async function getContext(contextName: string, userId: string) {
 
         return {
             ...context,
-            thoughts: thoughts.map((thought) => {
+            thoughts: thoughts
+                .sort((a, b) => {
+                    return a.createdAt > b.createdAt ? -1 : 1
+                })
+                .map((thought) => {
                 return {
                     ...thought,
                     createdAt: formatDate(thought.createdAt),
                 }
-            }).reverse()
+            })
         }
     }
 
