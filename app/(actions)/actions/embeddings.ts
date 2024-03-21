@@ -23,7 +23,8 @@ export async function embedDocument(doc: Document): Promise<PineconeRecord> {
                 chunk: doc.pageContent, // The chunk of text that the vector represents
                 text: doc.metadata.text as string, // The text of the document
                 url: doc.metadata.url as string, // The URL where the document was found
-                hash: doc.metadata.hash as string // The hash of the document content
+                hash: doc.metadata.hash as string, // The hash of the document content
+                    ...doc.metadata, // Include any other metadata from the document
             }
         } as PineconeRecord;
     } catch (error) {

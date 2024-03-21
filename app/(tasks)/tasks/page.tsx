@@ -1,6 +1,9 @@
 import {auth} from "@/auth";
 import Tasks from "@/components/tasks/tasks";
-import {getTasks} from "@/app/(actions)/actions/tasks";
+import {getTaskDetails, getTasks} from "@/app/(actions)/actions/tasks";
+
+
+
 
 export default async function IndexPage() {
     const session = await auth()

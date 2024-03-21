@@ -55,6 +55,8 @@ model User {
   accounts      Account[]
   sessions      Session[]
   contexts      Context[]
+  tasks         Task[]
+  intents       Intent[]
 }
 
 model VerificationToken {
@@ -94,13 +96,14 @@ model Context {
 }
 
 model Thought {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   content   String
-  owner     User    @relation(fields: [ownerId], references: [id])
+  owner     User     @relation(fields: [ownerId], references: [id])
   ownerId   String
-  context   Context @relation(fields: [contextId], references: [id])
+  context   Context  @relation(fields: [contextId], references: [id])
   contextId Int
+  intents   Intent[]
 }
 
 model Tool {
@@ -110,10 +113,10 @@ model Tool {
   description   String?
   pattern       String?
   slug          String
-  @@unique([url, slug])
   ToolToContext ToolToContext[]
   triggers      Trigger[]
 
+  @@unique([url, slug])
 }
 
 model ToolToContext {
@@ -129,4 +132,34 @@ enum Trigger {
   ACTION
   EVENT
   THOUGHT
+}
+
+model Task {
+  id             Int              @id @default(autoincrement())
+  name           String
+  description    String?
+  owner          User             @relation(fields: [ownerId], references: [id])
+  ownerId        String
+  uuid           String           @unique
+  dependencies   TaskDependency[] @relation("dependsOn")
+  dependantOn   TaskDependency[] @relation("dependentOn")
+}
+
+model TaskDependency {
+  dependent        Task @relation("dependentOn", fields: [dependentId], references: [id])
+  dependentId      Int
+  dependsOn   Task @relation("dependsOn", fields: [dependsOnId], references: [id])
+  dependsOnId Int
+
+  @@id([dependentId, dependsOnId])
+}
+
+model Intent {
+  id        Int      @id @default(autoincrement())
+  content   String
+  owner     User     @relation(fields: [ownerId], references: [id])
+  ownerId   String
+  thoughts  Thought[]
+  createdAt DateTime @default(now())
+  documentUUID String @unique
 }

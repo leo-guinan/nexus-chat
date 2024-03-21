@@ -28,8 +28,11 @@ export interface Thought {
 export interface Task {
     id: number;
     name: string;
-    details: string;
+    description: string | null;
     priority: number;
+    uuid: string;
+    subtasks?: Task[];
+    dependsOn?: Task[];
 }
 
 export type ThoughtMetadata = {

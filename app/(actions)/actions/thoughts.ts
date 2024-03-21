@@ -8,6 +8,8 @@ import {Trigger} from "@prisma/client/edge";
 import {formatDate, prisma} from "@/lib/utils";
 import {runTool} from "@/app/(actions)/actions/tools";
 import {embedDocument} from "@/app/(actions)/actions/embeddings";
+import {Thought} from "@/lib/types";
+import {getEmbeddings} from "@/utils/embeddings";
 
 export async function addThoughtToContext(contextId: number, thoughtContent: string) {
     const session = await auth()
@@ -100,4 +102,70 @@ export async function addThoughtToContext(contextId: number, thoughtContent: str
     console.log("createdThought", createdThought)
     return createdThought
 
+}
+
+
+export async function findRelatedThoughts(initialThoughts: Thought[], thingToDo: string) {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+        return {
+            error: "Unauthorized"
+        }
+    }
+
+    const pc = new Pinecone();
+    const index = pc.index(process.env.PINECONE_INDEX as string).namespace('myaicofounderv2');
+
+    if (!index) {
+        return {
+            error: "No index"
+        }
+    }
+
+    const lookupDocument = "I want to " + thingToDo + ". Here are some thoughts I have about it: " + initialThoughts.map(t => t.content).join("\n")
+
+    const lookupVector = await getEmbeddings(lookupDocument);
+
+
+    const relatedThoughtVectors = await index.query({
+        vector: lookupVector,
+        topK: 5,
+        includeMetadata: true,
+        filter: {
+            userId: {
+                $eq: session.user.id
+            }
+        },
+    });
+
+    console.log("relatedThoughtVectors", relatedThoughtVectors)
+
+    const relatedThoughts = []
+
+    for (let i = 0; i < relatedThoughtVectors.matches.length; i++) {
+        const thoughtId = relatedThoughtVectors.matches[i]?.metadata?.thoughtId
+        const thought = await prisma.thought.findUnique({
+            where: {
+                id: thoughtId as number,
+            }
+        })
+
+        if (!thought) {
+            continue
+        }
+
+        relatedThoughts.push(thought)
+    }
+
+
+    console.log("relatedThoughts", relatedThoughts)
+
+
+    return relatedThoughts.map((relatedThought) => {
+        return {
+            ...relatedThought,
+            createdAt: formatDate(relatedThought.createdAt),
+        }
+    })
 }

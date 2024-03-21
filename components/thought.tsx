@@ -1,5 +1,7 @@
 import {useState} from "react";
 import {type Thought} from "@/lib/types";
+import {Button} from "@/components/ui/button";
+import {DoSomethingModal} from "@/components/do-something-modal";
 
 export function Thought({thought}: {thought: Thought}) {
     const [open, setOpen] = useState(false)
@@ -13,11 +15,11 @@ export function Thought({thought}: {thought: Thought}) {
 
             <div className="flex items-center gap-4 peer:grid peer:gap-4">
                 <time className="text-sm not-italic peer-[translate-y-1] text-gray-500">{thought.createdAt}</time>
-                {/*<Button className="ml-auto" size="sm" onClick={handleCapture}>*/}
-                {/*    Do*/}
-                {/*</Button>*/}
+                <Button className="ml-auto" size="sm" onClick={handleCapture}>
+                    Do
+                </Button>
             </div>
-            {/*<ChatModal open={open} setOpen={setOpen} />*/}
+            <DoSomethingModal open={open} setOpen={setOpen} initialThoughts={[thought]} />
         </div>
     )
 }

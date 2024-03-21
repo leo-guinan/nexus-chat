@@ -17,14 +17,23 @@ export interface ContextProps extends React.ComponentProps<'div'> {
 }
 
 export function ThoughtContext({contextId, contextName, initialThoughts, className}: ContextProps) {
-    const [thoughts, setThoughts] = useState<ThoughtType[]>()
+    const [thoughts, setThoughts] = useState<ThoughtType[]>([])
 
     useEffect(() => {
         // const newThoughts = initialThoughts?.map((thought) => thought.content) ?? []
-        setThoughts(initialThoughts)
+        if (initialThoughts) setThoughts(initialThoughts)
     }, [initialThoughts])
 
     const rememberThought = async (thoughtContent: string) => {
+
+        setThoughts([{
+            id: -1,
+            content: thoughtContent,
+            ownerId: '',
+            contextId: contextId,
+            createdAt: "Now"
+        }, ...thoughts])
+
         const thought = await addThoughtToContext(contextId, thoughtContent)
         if ('error' in thought) {
             console.error(thought.error)

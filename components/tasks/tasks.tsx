@@ -7,27 +7,21 @@
 import {Card, CardContent, CardHeader} from "@/components/ui/card"
 import {closestCenter, DndContext, useSensor, useSensors} from "@dnd-kit/core";
 import {SortableContext, sortableKeyboardCoordinates} from '@dnd-kit/sortable';
-import Task from "./task";
 import {useEffect, useState} from "react";
 import {KeyboardSensor, PointerSensor, TouchSensor} from "@/utils/dnd/smart-sensors";
 import {completeTask, prioritizeTasks} from "@/app/(actions)/actions/tasks";
+import {Task as TaskType} from "@/lib/types";
+import Task from "@/components/tasks/task";
 
-
-interface Task {
-    id: number
-    name: string
-    details: string
-    priority: number
-}
 
 interface TasksProps {
-    initialTasks: Task[]
+    initialTasks: TaskType[]
     userId: string
 }
 
 export default function Tasks({initialTasks, userId}: TasksProps) {
 
-    const [prioritizedTasks, setPrioritizedTasks] = useState<Task[]>(initialTasks)
+    const [prioritizedTasks, setPrioritizedTasks] = useState<TaskType[]>(initialTasks)
 
 
     const sensors = useSensors(
@@ -52,9 +46,9 @@ export default function Tasks({initialTasks, userId}: TasksProps) {
     };
 
     useEffect(() => {
-        void prioritizeTasks(userId, prioritizedTasks.map((task: Task, index: number) => {
+        void prioritizeTasks(userId, prioritizedTasks.map((task: TaskType, index: number) => {
             return {
-                taskId: task.id,
+                task: task,
                 priority: index
             }
         }));
