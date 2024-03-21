@@ -1,25 +1,17 @@
 import {Button} from "@/components/ui/button";
+import Link from "next/link";
 
-interface GenerateTasksProps {
-    generateTasks: () => Promise<void>
-}
 
-export default function GenerateTasks({generateTasks}: GenerateTasksProps) {
-
-    const handleSubmit = async (data: FormData) => {
-        "use server"
-        await generateTasks()
-
-    }
+export default function GenerateTasks({documentUUID}: {documentUUID: string}) {
 
 
     return (
         <div className="flex flex-row my-auto">
-            <form action={handleSubmit}>
-                <Button type="submit">
+            <Link href={`/tasks/generating?documentUUID=${documentUUID}`}>
+                <Button>
                     Generate Tasks From Plan
                 </Button>
-            </form>
+            </Link>
         </div>
     );
 }

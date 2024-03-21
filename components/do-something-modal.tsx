@@ -33,6 +33,7 @@ export function DoSomethingModal({open, setOpen, id, initialThoughts, className}
     const [checkedThoughts, setCheckedThoughts] = React.useState<Thought[]>([])
 
     const [documentUrl, setDocumentUrl] = React.useState<string>('')
+    const [error, setError] = React.useState<string>('')
 
     const clearSearch = () => {
         setMatchedThoughts([])
@@ -56,32 +57,48 @@ export function DoSomethingModal({open, setOpen, id, initialThoughts, className}
     const searchForMatchingThoughts = async () => {
 
         setWaitOn("Searching for matching thoughts...")
+        try {
 
-        console.log("searching for matching thoughts")
 
-        const relatedThoughts = await findRelatedThoughts(initialThoughts, whatToDo)
-        if ('error' in relatedThoughts) {
-            console.error("error", relatedThoughts.error)
-            return
+            console.log("searching for matching thoughts")
+
+            const relatedThoughts = await findRelatedThoughts(initialThoughts, whatToDo)
+            if ('error' in relatedThoughts) {
+                console.error("error", relatedThoughts.error)
+                setError("Error finding related thoughts")
+                setWaitOn('')
+
+                return
+            }
+
+            setMatchedThoughts([...relatedThoughts])
+            setCheckedThoughts([...relatedThoughts])
+
+            setReadyToWork(true)
+        } catch (e) {
+            console.error("error", e)
+            setError("Error finding related thoughts")
         }
-
-        setMatchedThoughts([...relatedThoughts])
-        setCheckedThoughts([ ...relatedThoughts])
-
-        setReadyToWork(true)
         setWaitOn('')
     }
 
     const createDocument = async () => {
-        setWaitOn("Creating document...")
-        const documentResponse = await generateDocument(checkedThoughts, whatToDo)
-        console.log("documentResponse", documentResponse)
-        if ('error' in documentResponse) {
-            console.error("error", documentResponse.error)
-            return
-        }
+        setWaitOn("Creating action plan...")
+        try {
+            const documentResponse = await generateDocument(checkedThoughts, whatToDo)
+            console.log("documentResponse", documentResponse)
+            if ('error' in documentResponse) {
+                console.error("error", documentResponse.error)
+                setError("Error generating action plan")
+                setWaitOn('')
+                return
+            }
 
-        setDocumentUrl(`/document/${documentResponse.uuid}`)
+            setDocumentUrl(`/document/${documentResponse.uuid}`)
+        } catch (e) {
+            console.error("error", e)
+            setError("Error generating action plan")
+        }
         setWaitOn('')
 
     }
@@ -114,6 +131,11 @@ export function DoSomethingModal({open, setOpen, id, initialThoughts, className}
                         >
                             <Dialog.Panel
                                 className="relative transform overflow-hidden rounded-lg dark:bg-zinc-950 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
+                                {error && (
+                                    <div className="bg-red-100 p-4 rounded-lg">
+                                        <p className="text-red-600">{error}</p>
+                                    </div>
+                                )}
                                 {waitOn && (
                                     <>
                                         <LoadingSpinner label={waitOn}/>
@@ -217,7 +239,7 @@ export function DoSomethingModal({open, setOpen, id, initialThoughts, className}
                                         )}
                                         {documentUrl && (
                                             <Link href={documentUrl}>
-                                                View Plan
+                                                View Action Plan
                                             </Link>
                                         )}
                                     </>

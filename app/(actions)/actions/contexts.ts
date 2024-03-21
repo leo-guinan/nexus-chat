@@ -76,7 +76,7 @@ export async function getContext(contextName: string, userId: string) {
                     ...thought,
                     createdAt: formatDate(thought.createdAt),
                 }
-            })
+            }).reverse()
         }
     }
 

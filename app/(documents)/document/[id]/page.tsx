@@ -42,18 +42,6 @@ export default async function DocumentPage({params}: DocumentPageProps) {
 
     const doc = await getDocument(params.id)
 
-    // if (!doc) {
-    //   notFound()
-    // }
-
-    // if (doc?.userId !== session?.user?.id) {
-    //   notFound()
-    // }
-     const generateTasks = async () => {
-        "use server"
-        console.log("Generating tasks from plan")
-        await generateTasksFromPlan(doc.uuid)
-    }
 
     return (
         <>
@@ -65,7 +53,7 @@ export default async function DocumentPage({params}: DocumentPageProps) {
                 </div>
                 <div className="flex flex-col gap-4">
                     <div className="grid w-full gap-1.5">
-                        <GenerateTasks generateTasks={generateTasks}/>
+                        <GenerateTasks documentUUID={doc.uuid} />
                         {/*<Chat/>*/}
 
                     </div>

@@ -19,39 +19,45 @@ export default function TaskDetails({task}: TaskDetailsProps) {
                 <h1 className="text-3xl font-bold tracking-tight">{task.name}</h1>
                 <p className="text-gray-500 dark:text-gray-400">{task.description}</p>
             </div>
-            <div className="space-y-2">
-                <h2 className="text-2xl font-bold tracking-tight">Depends On</h2>
-                <div className="space-y-4">
-                    {task.dependsOn?.map((depends, index) => (
-                        <Card key={`dependsOn_${depends.id}`}>
-                            <CardContent className="flex items-start gap-4 p-4">
-                                <div>
-                                    <Link href={`/tasks/${depends.uuid}`} className="hover:underline">{depends.name}</Link>
-                                    <CardDescription>{depends.description}</CardDescription>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
+            {(task.dependsOn?.length ?? 0) > 0 && (
+                <div className="space-y-2">
+                    <h2 className="text-2xl font-bold tracking-tight">Tasks Blocked By This Task </h2>
+                    <div className="space-y-4">
+                        {task.dependsOn?.map((depends, index) => (
+                            <Card key={`dependsOn_${depends.id}`}>
+                                <CardContent className="flex items-start gap-4 p-4">
+                                    <div>
+                                        <Link href={`/tasks/${depends.uuid}`}
+                                              className="hover:underline">{depends.name}</Link>
+                                        <CardDescription>{depends.description}</CardDescription>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
 
+                    </div>
                 </div>
-            </div>
-            <div className="space-y-2">
-                <h2 className="text-2xl font-bold tracking-tight">Subtasks</h2>
-                <div className="space-y-4">
-                    {task.subtasks?.map((subtask, index) => (
-                        <Card key={`subtask_${subtask.id}`}>
-                            <CardContent className="flex items-start gap-4 p-4">
-                                <div>
-                                    <CardTitle>
-                                        <Link href={`/tasks/${subtask.uuid}`} className="hover:underline">{subtask.name}</Link>
-                                    </CardTitle>
-                                    <CardDescription>{subtask.description}</CardDescription>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
+            )}
+            {(task?.subtasks?.length ?? 0) > 0 && (
+                <div className="space-y-2">
+                    <h2 className="text-2xl font-bold tracking-tight">Subtasks</h2>
+                    <div className="space-y-4">
+                        {task.subtasks?.map((subtask, index) => (
+                            <Card key={`subtask_${subtask.id}`}>
+                                <CardContent className="flex items-start gap-4 p-4">
+                                    <div>
+                                        <CardTitle>
+                                            <Link href={`/tasks/${subtask.uuid}`}
+                                                  className="hover:underline">{subtask.name}</Link>
+                                        </CardTitle>
+                                        <CardDescription>{subtask.description}</CardDescription>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     )
 }
