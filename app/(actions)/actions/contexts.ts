@@ -47,7 +47,11 @@ export async function getContext(contextName: string, userId: string) {
 
         if (extraData.length === 0) return {
             ...context,
-            thoughts: context.thoughts.map((thought) => {
+            thoughts: context.thoughts
+                .sort((a, b) => {
+                    return a.createdAt > b.createdAt ? -1 : 1
+                })
+                .map((thought) => {
                 return {
                     ...thought,
                     createdAt: formatDate(thought.createdAt),
