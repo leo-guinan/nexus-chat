@@ -67,9 +67,7 @@ export async function POST(req: Request,
     const index = pc.index(process.env.PINECONE_INDEX as string).namespace('myaicofounderv2');
 
     if (!index) {
-        return {
-            error: "No index"
-        }
+        return Response.json("Sorry, I had an issue with that last message. Please try again.")
     }
 
     const lookupVector = await getEmbeddings(currentMessageContent);
