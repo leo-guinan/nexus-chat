@@ -33,6 +33,7 @@ export async function POST(req: Request,
     const body = await req.json();
     const messages = body.messages ?? [];
     const userId = body.userId;
+    const sessionId = body.id;
     const formattedPreviousMessages = messages.slice(0, -1).map(formatMessage);
     const currentMessageContent = messages[messages.length - 1].content;
     const client = new MongoClient(process.env.MONGO_URL || "");
@@ -40,20 +41,17 @@ export async function POST(req: Request,
     const internalCollection = client.db("myaicofounder").collection("internal_memory");
     const externalCollection = client.db("myaicofounder").collection("external_memory");
 
-    // generate a new sessionId string
-    const sessionId = new ObjectId().toString();
-
     const internalMemory = new BufferMemory({
         chatHistory: new MongoDBChatMessageHistory({
             collection: internalCollection,
-            sessionId,
+            sessionId: `${sessionId}_internal`,
         }),
     });
 
     const externalMemory = new BufferMemory({
         chatHistory: new MongoDBChatMessageHistory({
             collection: externalCollection,
-            sessionId,
+            sessionId: `${sessionId}_external`,
         }),
     });
 
