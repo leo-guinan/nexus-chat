@@ -2,6 +2,7 @@ import {useState} from "react";
 import {type Thought} from "@/lib/types";
 import {Button} from "@/components/ui/button";
 import {DoSomethingModal} from "@/components/do-something-modal";
+import {formatDate} from "@/lib/utils";
 
 export function Thought({thought}: {thought: Thought}) {
     const [open, setOpen] = useState(false)
@@ -9,12 +10,14 @@ export function Thought({thought}: {thought: Thought}) {
         setOpen(true)
     }
 
+    const formattedDate = thought.createdAt instanceof Date ? formatDate(thought.createdAt) : thought.createdAt
+
     return (
         <div className="w-full max-w-sm border border-gray-200 rounded-lg p-4">
             <p className="text-sm  peer-[translate-y-2]">{thought.content}</p>
 
             <div className="flex items-center gap-4 peer:grid peer:gap-4">
-                <time className="text-sm not-italic peer-[translate-y-1] text-gray-500">{thought.createdAt}</time>
+                <time className="text-sm not-italic peer-[translate-y-1] text-gray-500">{formattedDate}</time>
                 <Button className="ml-auto" size="sm" onClick={handleCapture}>
                     Do
                 </Button>
