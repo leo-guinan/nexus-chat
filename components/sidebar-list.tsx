@@ -43,6 +43,15 @@ export async function SidebarList({userId: _}: SidebarListProps) {
                 >
                     Tasks
                 </Link>
+                <Link
+                    href={`/chat`}
+                    className={cn(
+                        buttonVariants({variant: 'ghost'}),
+                        'group w-full px-8 transition-colors hover:bg-zinc-200/40 dark:hover:bg-zinc-300/10',
+                    )}
+                >
+                    New Chat
+                </Link>
             </div>
             {/*<div className="p-8 text-center">Contexts</div>*/}
             {/*<div className="flex-1 overflow-auto">*/}
