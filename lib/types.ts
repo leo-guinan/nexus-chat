@@ -22,8 +22,8 @@ export interface Thought {
     id: number;
     content: string;
     contextId: number;
-    createdAt: string;
-    uuid?: string;
+    createdAt: string | Date;
+    uuid?: string | null;
 }
 
 export interface Task {
