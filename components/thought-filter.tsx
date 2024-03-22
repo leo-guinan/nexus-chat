@@ -23,7 +23,7 @@ export default function ThoughtFilter({filterThoughts}: {filterThoughts: (though
                         </label>
                         <Input
                             id="thought-filter"
-                            placeholder="Type your thought"
+                            placeholder="related to"
                             onChange={(e) => setThoughtFilter(e.target.value)}
                             value={thoughtFilter}
                             onKeyDown={handleKeyPress}
