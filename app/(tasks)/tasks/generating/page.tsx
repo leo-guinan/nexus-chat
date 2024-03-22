@@ -26,7 +26,7 @@ export default async function GeneratingTasksPage({params}: DocumentPageProps) {
           if(documentUUID) {
               await generateTasksFromPlan(documentUUID)
 
-              router.push('/tasks');
+              router.push(`/tasks/${documentUUID}`);
           } else {
               router.push('/');
           }

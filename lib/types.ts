@@ -23,6 +23,7 @@ export interface Thought {
     content: string;
     contextId: number;
     createdAt: string;
+    uuid?: string;
 }
 
 export interface Task {

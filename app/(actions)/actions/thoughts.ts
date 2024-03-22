@@ -5,7 +5,7 @@ import md5 from "md5";
 import {Document} from "@pinecone-database/doc-splitter";
 import {chunkedUpsert} from "@/utils/chunkedUpsert";
 import {Trigger} from "@prisma/client/edge";
-import {formatDate, prisma} from "@/lib/utils";
+import {formatDate, nanoid, prisma} from "@/lib/utils";
 import {runTool} from "@/app/(actions)/actions/tools";
 import {embedDocument} from "@/app/(actions)/actions/embeddings";
 import {Thought} from "@/lib/types";
@@ -23,6 +23,7 @@ export async function addThoughtToContext(contextId: number, thoughtContent: str
     const newThought = await prisma.thought.create({
         data: {
             content: thoughtContent,
+            uuid: nanoid(),
             owner: {
                 connect: {
                     id: session.user.id
@@ -85,7 +86,7 @@ export async function addThoughtToContext(contextId: number, thoughtContent: str
             for (let i = 0; i < toolsToContext.length; i++) {
                 const tool = toolsToContext[i].tool
                 if (tool.triggers.includes(Trigger.THOUGHT)) {
-                    await runTool(tool, thoughtContent, session.user.id);
+                    await runTool(tool, newThought, session.user.id);
                 }
             }
         })();

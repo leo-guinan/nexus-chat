@@ -57,7 +57,7 @@ export async function POST(req: Request,
 
 
     const model = new ChatOpenAI({
-        modelName: "gpt-3.5-turbo",
+        modelName: "gpt-4",
         temperature: 0,
     });
 
@@ -108,9 +108,9 @@ export async function POST(req: Request,
     const thinkingResult = await internalChain.call({input: `Here's what the user said: ${currentMessageContent}. Here are some of their related thoughts: ${combinedThoughts}.\n What do you think they want?`});
     const thinkingResultContent = thinkingResult.response;
     console.log("After thinking about it: ", thinkingResult.response)
-    const TEMPLATE = `You are a brilliant assistant who is so good, it's like you are reading my mind. 
+    const TEMPLATE = `You are a brilliant assistant who is so good, it's like you are reading the user's mind. 
 
-        After reflecting on what I said, this is what you think I want: ${thinkingResultContent}
+        After reflecting on what the user said, this is what you think they want: ${thinkingResultContent}
         
          
         Current conversation:
