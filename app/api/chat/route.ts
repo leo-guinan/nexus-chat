@@ -2,14 +2,13 @@ import {Message as VercelChatMessage, StreamingTextResponse} from 'ai';
 import OpenAI from 'openai'
 import {PromptTemplate} from "@langchain/core/prompts";
 import {ChatOpenAI} from "@langchain/openai";
-import {MongoClient, ObjectId} from "mongodb";
+import {MongoClient} from "mongodb";
 import {BufferMemory} from "langchain/memory";
 import {MongoDBChatMessageHistory} from "@langchain/mongodb";
 import {ConversationChain} from "langchain/chains";
 import {Pinecone} from "@pinecone-database/pinecone";
 import {getEmbeddings} from "@/utils/embeddings";
 import {prisma} from "@/lib/utils";
-
 
 
 export const runtime = "nodejs";
@@ -142,7 +141,22 @@ export async function POST(req: Request,
     });
 
     console.log("final result", result.response)
+    /*
+       * Agent executors don't support streaming responses (yet!), so stream back the
+       * complete response one character at a time with a delay to simluate it.
+       */
+    const textEncoder = new TextEncoder();
+    const fakeStream = new ReadableStream({
+        async start(controller) {
+            for (const character of result.response) {
+                controller.enqueue(textEncoder.encode(character));
+                await new Promise((resolve) => setTimeout(resolve, 20));
+            }
+            controller.close();
+        },
+    });
 
-    return Response.json(result.response)
+    return new StreamingTextResponse(fakeStream);
+
 
 }
