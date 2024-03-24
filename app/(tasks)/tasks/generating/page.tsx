@@ -13,9 +13,10 @@ export interface DocumentPageProps {
 }
 
 
-export default async function GeneratingTasksPage({params}: DocumentPageProps) {
+export default function GeneratingTasksPage({params}: DocumentPageProps) {
     const searchParams = useSearchParams()
     const documentUUID = searchParams.get('documentUUID')
+    const taskUUID = searchParams.get('taskUUID')
 
 
     const router = useRouter();
@@ -23,10 +24,9 @@ export default async function GeneratingTasksPage({params}: DocumentPageProps) {
   useEffect(() => {
     const performServerAction = async () => {
       try {
-          if(documentUUID) {
-              await generateTasksFromPlan(documentUUID)
-
-              router.push(`/tasks/${documentUUID}`);
+          if(documentUUID && taskUUID) {
+              await generateTasksFromPlan(documentUUID, taskUUID)
+              router.push(`/tasks/${taskUUID}`);
           } else {
               router.push('/');
           }

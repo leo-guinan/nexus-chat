@@ -138,7 +138,8 @@ export async function completeTask(userId: string, taskId: number) {
     return true
 }
 
-export async function generateTasksFromPlan(documentUUID: string) {
+export async function generateTasksFromPlan(documentUUID: string, taskUUID: string) {
+    console.log("documentUUID to generate with", documentUUID)
     const session = await auth()
 
     if (!session?.user?.id) {
@@ -187,7 +188,7 @@ export async function generateTasksFromPlan(documentUUID: string) {
         data: {
             name: intent?.content ?? "",
             description: "",
-            uuid: nanoid(),
+            uuid: taskUUID,
             owner: {
                 connect: {
                     id: session.user.id

@@ -53,7 +53,7 @@ export default async function DocumentPage({params}: DocumentPageProps) {
                 </div>
                 <div className="flex flex-col gap-4">
                     <div className="grid w-full gap-1.5">
-                        <GenerateTasks documentUUID={doc.uuid} />
+                        <GenerateTasks documentUUID={doc.uuid}/>
                         {/*<Chat/>*/}
 
                     </div>

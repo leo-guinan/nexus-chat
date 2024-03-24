@@ -124,6 +124,9 @@ export async function generateDocument(thoughts: Thought[], intent: string) {
             error: "No tool matching that url"
         }
     }
+    const sentUUID = nanoid()
+
+    console.log("UUID pre sending", sentUUID)
 
     const status = await fetch(generateDocumentTool?.url as string, {
         method: "POST",
@@ -133,12 +136,14 @@ export async function generateDocument(thoughts: Thought[], intent: string) {
         },
         body: JSON.stringify({
             user_id: session.user.id,
-            uuid: nanoid(),
+            uuid: sentUUID,
             prompt: content
         })
     })
     const jsonResults = await status.json()
     console.log("status", jsonResults)
+
+    console.log("UUID post sending", jsonResults.uuid)
 
     await prisma.intent.create({
         data: {
@@ -148,6 +153,13 @@ export async function generateDocument(thoughts: Thought[], intent: string) {
                 connect: {
                     id: session.user.id
                 }
+            },
+            thoughts: {
+                connect: thoughts.map(t => {
+                    return {
+                        id: t.id
+                    }
+                })
             }
         }
     })

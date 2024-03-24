@@ -93,6 +93,8 @@ export function DoSomethingModal({open, setOpen, id, initialThoughts, className}
                 return
             }
 
+
+
             setDocumentUrl(`/document/${documentResponse.uuid}`)
         } catch (e) {
             console.error("error", e)
