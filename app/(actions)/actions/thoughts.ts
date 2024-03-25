@@ -84,9 +84,21 @@ export async function addThoughtToContext(contextId: number, thoughtContent: str
             }
         });
 
+        const defaultTools = await prisma.defaultTool.findMany({
+            include: {
+                tool: true
+            }
+        });
+
         (async function loop() {
             for (let i = 0; i < toolsToContext.length; i++) {
                 const tool = toolsToContext[i].tool
+                if (tool.triggers.includes(Trigger.THOUGHT)) {
+                    await runTool(tool, newThought, session.user.id);
+                }
+            }
+            for (let i = 0; i < defaultTools.length; i++) {
+                const tool = defaultTools[i].tool
                 if (tool.triggers.includes(Trigger.THOUGHT)) {
                     await runTool(tool, newThought, session.user.id);
                 }

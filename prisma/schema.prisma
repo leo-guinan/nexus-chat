@@ -119,6 +119,8 @@ model Tool {
   slug          String
   ToolToContext ToolToContext[]
   triggers      Trigger[]
+  defaultTool   DefaultTool?
+  defaultToolId Int?
 
   @@unique([url, slug])
 }
@@ -173,4 +175,12 @@ model EntityId {
   id        Int      @id @default(autoincrement())
   name      String
   createdAt DateTime @default(now())
+}
+
+model DefaultTool {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  tool      Tool     @relation(fields: [toolId], references: [id])
+  toolId    Int     @unique
+
 }
