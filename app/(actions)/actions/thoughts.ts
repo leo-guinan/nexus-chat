@@ -115,52 +115,14 @@ export async function findRelatedThoughts(initialThoughts: Thought[], thingToDo:
         }
     }
 
-    const pc = new Pinecone();
-    const index = pc.index(process.env.PINECONE_INDEX as string).namespace('myaicofounderv2');
-
-    if (!index) {
-        return {
-            error: "No index"
-        }
-    }
-
-    const lookupDocument = "I want to " + thingToDo + ". Here are some thoughts I have about it: " + initialThoughts.map(t => t.content).join("\n")
-
-    const lookupVector = await getEmbeddings(lookupDocument);
-
-
-    const relatedThoughtVectors = await index.query({
-        vector: lookupVector,
-        topK: 5,
-        includeMetadata: true,
-        filter: {
-            userId: {
-                $eq: session.user.id
-            }
-        },
-    });
-
-    console.log("relatedThoughtVectors", relatedThoughtVectors)
-
-    const relatedThoughts = []
-
-    for (let i = 0; i < relatedThoughtVectors.matches.length; i++) {
-        const thoughtId = relatedThoughtVectors.matches[i]?.metadata?.thoughtId
-        const thought = await prisma.thought.findUnique({
-            where: {
-                id: thoughtId as number,
-            }
-        })
-
-        if (!thought) {
-            continue
-        }
-
-        relatedThoughts.push(thought)
-    }
-
-
+    const relatedThoughts = await findBestMatchedThoughts(thingToDo, session.user.id)
     console.log("relatedThoughts", relatedThoughts)
+
+    if ('error' in relatedThoughts) {
+        return {
+            error: relatedThoughts.error
+        }
+    }
 
 
     return relatedThoughts.map((relatedThought) => {
@@ -180,6 +142,25 @@ export async function filterThoughts(contextId: number, thoughtFilter: string) {
         }
     }
 
+    const relatedThoughts = await findBestMatchedThoughts(thoughtFilter, session.user.id)
+
+    if ('error' in relatedThoughts) {
+        return {
+            error: relatedThoughts.error
+        }
+    }
+
+
+    console.log("relatedThoughts", relatedThoughts)
+    return relatedThoughts.map((relatedThought) => {
+        return {
+            ...relatedThought,
+            createdAt: formatDate(relatedThought.createdAt),
+        }
+    });
+}
+
+export async function findBestMatchedThoughts(filter: string, userId: string) {
     const pc = new Pinecone();
     const index = pc.index(process.env.PINECONE_INDEX as string).namespace('myaicofounderv2');
 
@@ -189,15 +170,15 @@ export async function filterThoughts(contextId: number, thoughtFilter: string) {
         }
     }
 
-    const lookupVector = await getEmbeddings(thoughtFilter);
+    const lookupVector = await getEmbeddings(filter);
 
     const relatedThoughtVectors = await index.query({
         vector: lookupVector,
-        topK: 5,
+        topK: 20,
         includeMetadata: true,
         filter: {
             userId: {
-                $eq: session.user.id
+                $eq: userId
             }
         },
     });
@@ -207,25 +188,27 @@ export async function filterThoughts(contextId: number, thoughtFilter: string) {
     const relatedThoughts = []
 
     for (let i = 0; i < relatedThoughtVectors.matches.length; i++) {
-        const thoughtId = relatedThoughtVectors.matches[i]?.metadata?.thoughtId
-        const thought = await prisma.thought.findUnique({
-            where: {
-                id: thoughtId as number,
-            }
-        })
-
-        if (!thought) {
+        if (!relatedThoughtVectors.matches[i]?.score) {
             continue
         }
+        // @ts-ignore - covered by if check above, not sure why ts isn't respecting that
+        if (relatedThoughtVectors.matches[i].score > 0.8) {
 
-        relatedThoughts.push(thought)
+
+            const thoughtId = relatedThoughtVectors.matches[i]?.metadata?.thoughtId
+            const thought = await prisma.thought.findUnique({
+                where: {
+                    id: thoughtId as number,
+                }
+            })
+
+            if (!thought) {
+                continue
+            }
+
+            relatedThoughts.push(thought)
+        }
     }
 
-    console.log("relatedThoughts", relatedThoughts)
-    return relatedThoughts.map((relatedThought) => {
-        return {
-            ...relatedThought,
-            createdAt: formatDate(relatedThought.createdAt),
-        }
-    });
+    return relatedThoughts
 }

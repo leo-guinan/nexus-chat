@@ -9,6 +9,7 @@ import {ConversationChain} from "langchain/chains";
 import {Pinecone} from "@pinecone-database/pinecone";
 import {getEmbeddings} from "@/utils/embeddings";
 import {prisma} from "@/lib/utils";
+import {findBestMatchedThoughts} from "@/app/(actions)/actions/thoughts";
 
 
 export const runtime = "nodejs";
@@ -67,39 +68,15 @@ export async function POST(req: Request,
         return Response.json("Sorry, I had an issue with that last message. Please try again.")
     }
 
-    const lookupVector = await getEmbeddings(currentMessageContent);
 
-    const relatedThoughtVectors = await index.query({
-        vector: lookupVector,
-        topK: 5,
-        includeMetadata: true,
-        filter: {
-            userId: {
-                $eq: userId
-            }
-        },
-    });
-
-    console.log("relatedThoughtVectors", relatedThoughtVectors)
-
-    const relatedThoughts = []
-
-    for (let i = 0; i < relatedThoughtVectors.matches.length; i++) {
-        const thoughtId = relatedThoughtVectors.matches[i]?.metadata?.thoughtId
-        const thought = await prisma.thought.findUnique({
-            where: {
-                id: thoughtId as number,
-            }
-        })
-
-        if (!thought) {
-            continue
-        }
-
-        relatedThoughts.push(thought.content)
-    }
-
+    const relatedThoughts = await findBestMatchedThoughts(currentMessageContent, userId)
     console.log("relatedThoughts", relatedThoughts)
+
+    if ('error' in relatedThoughts) {
+        return {
+            error: relatedThoughts.error
+        }
+    }
 
     const combinedThoughts = relatedThoughts.join('\n')
 
