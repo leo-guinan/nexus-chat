@@ -86,11 +86,14 @@ model Membership {
 model Context {
   id            Int             @id @default(autoincrement())
   name          String
+  details       String?
   thoughts      Thought[]
   owner         User            @relation(fields: [ownerId], references: [id])
   ownerId       String
   path          String?
   ToolToContext ToolToContext[]
+  tasks         Task[]
+  goal         String?
 
   @@unique([ownerId, name])
 }
@@ -144,6 +147,7 @@ model Task {
   uuid           String           @unique
   dependencies   TaskDependency[] @relation("dependsOn")
   dependantOn   TaskDependency[] @relation("dependentOn")
+  contexts       Context[]
 }
 
 model TaskDependency {

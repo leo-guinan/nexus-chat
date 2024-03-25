@@ -3,6 +3,12 @@ import {nanoid, prisma} from "@/lib/utils"
 import {getDocument} from "@/app/(actions)/actions/documents";
 import {auth} from "@/auth";
 import {Task} from "@/lib/types";
+import {Pinecone} from "@pinecone-database/pinecone";
+import md5 from "md5";
+import {Document} from "@pinecone-database/doc-splitter";
+import {embedDocument} from "@/app/(actions)/actions/embeddings";
+import {chunkedUpsert} from "@/utils/chunkedUpsert";
+import {getEmbeddings} from "@/utils/embeddings";
 
 export async function getTasks(userId?: string | null) {
     const taskTool = await prisma.tool.findUnique({
@@ -216,6 +222,7 @@ export async function generateTasksFromPlan(documentUUID: string, taskUUID: stri
                 }
             })
 
+
             await prisma.taskDependency.create({
                 data: {
                     dependsOn: {
@@ -230,6 +237,8 @@ export async function generateTasksFromPlan(documentUUID: string, taskUUID: stri
                     }
                 }
             })
+
+            await embedTask(taskObject, session.user.id)
 
 
             tasks.push(taskObject)
@@ -259,7 +268,7 @@ export async function getTaskDetails(userId: string, taskUUID: string) {
                     error: "Task not found"
                 }
             }
-            await prisma.task.create({
+            const newTask = await prisma.task.create({
                 data: {
                     name: task.name,
                     description: task.description,
@@ -271,6 +280,8 @@ export async function getTaskDetails(userId: string, taskUUID: string) {
                     }
                 }
             })
+
+            await embedTask(newTask, userId)
         } catch (e) {
             return {
                 error: "Task not found"
@@ -355,4 +366,80 @@ export async function getRemoteTask(userId: string, taskId: number) {
     const jsonResults = await task.json()
 
     return jsonResults.task
+}
+
+export async function embedTask(task: Task, userId: string) {
+    const pc = new Pinecone();
+    const index = pc.index(process.env.PINECONE_INDEX as string);
+    const taskContent = `${task.name}: ${task.description}`
+    const hash = md5(taskContent);
+    const doc = new Document({
+        pageContent: taskContent,
+        metadata: {
+            taskId: task.id,
+            userId: userId,
+            uuid: task.uuid,
+            hash,
+            type: 'task'
+        }
+    })
+    const vectors = [await embedDocument(doc)]
+    await chunkedUpsert(index!, vectors, process.env.PINECONE_NAMESPACE as string, 10);
+}
+
+export async function findBestMatchedTasks(filter: string, userId: string) {
+    const pc = new Pinecone();
+    const index = pc.index(process.env.PINECONE_INDEX as string).namespace(process.env.PINECONE_NAMESPACE as string);
+
+    if (!index) {
+        return {
+            error: "No index"
+        }
+    }
+
+    const lookupVector = await getEmbeddings(filter);
+
+    const relatedTaskVectors = await index.query({
+        vector: lookupVector,
+        topK: 20,
+        includeMetadata: true,
+        filter: {
+            userId: {
+                $eq: userId
+            },
+            type: {
+                $eq: 'task'
+            }
+        },
+    });
+
+    console.log("relatedThoughtVectors", relatedTaskVectors)
+
+    const relatedTasks = []
+
+    for (let i = 0; i < relatedTaskVectors.matches.length; i++) {
+        if (!relatedTaskVectors.matches[i]?.score) {
+            continue
+        }
+        // @ts-ignore - covered by if check above, not sure why ts isn't respecting that
+        if (relatedTaskVectors.matches[i].score > 0.8) {
+
+
+            const taskId = relatedTaskVectors.matches[i]?.metadata?.taskId
+            const task = await prisma.task.findUnique({
+                where: {
+                    id: taskId as number,
+                }
+            })
+
+            if (!task) {
+                continue
+            }
+
+            relatedTasks.push(task)
+        }
+    }
+
+    return relatedTasks
+
 }

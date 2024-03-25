@@ -30,7 +30,7 @@ export interface Task {
     id: number;
     name: string;
     description: string | null;
-    priority: number;
+    priority?: number;
     uuid: string;
     subtasks?: Task[];
     dependsOn?: Task[];

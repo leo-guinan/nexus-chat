@@ -62,7 +62,7 @@ export async function POST(req: Request,
     });
 
     const pc = new Pinecone();
-    const index = pc.index(process.env.PINECONE_INDEX as string).namespace('myaicofounderv2');
+    const index = pc.index(process.env.PINECONE_INDEX as string).namespace(process.env.PINECONE_NAMESPACE as string);
 
     if (!index) {
         return Response.json("Sorry, I had an issue with that last message. Please try again.")
@@ -73,9 +73,7 @@ export async function POST(req: Request,
     console.log("relatedThoughts", relatedThoughts)
 
     if ('error' in relatedThoughts) {
-        return {
-            error: relatedThoughts.error
-        }
+        return Response.json("Sorry, I had an issue with that last message. Please try again.")
     }
 
     const combinedThoughts = relatedThoughts.join('\n')

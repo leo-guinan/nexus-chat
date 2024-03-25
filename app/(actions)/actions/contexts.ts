@@ -128,6 +128,49 @@ export async function getContext(contextName: string, userId: string) {
 
 }
 
+export async function getLimitedContext(contextName: string, userId: string) {
+    const session = await auth()
+    console.log("getContext Session", session)
+    if (!session?.user?.id) {
+        return {
+            error: 'Unauthorized'
+        }
+    }
+    const context = await prisma.context.findUnique({
+        where: {
+            ownerId_name: {
+                ownerId: userId,
+                name: contextName
+            }
+        },
+        include: {
+            thoughts: true,
+            tasks: true
+        }
+    })
+
+    if (context) {
+
+        return {
+            ...context,
+            thoughts: context.thoughts
+                .sort((a, b) => {
+                    return a.createdAt > b.createdAt ? -1 : 1
+                })
+                .map((thought) => {
+                return {
+                    ...thought,
+                    createdAt: formatDate(thought.createdAt),
+                }
+            })
+        }
+    }
+
+    return null
+
+
+}
+
 export async function getContexts(userId?: string | null) {
 
     if (!userId) {

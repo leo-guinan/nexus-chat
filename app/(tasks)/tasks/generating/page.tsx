@@ -6,14 +6,8 @@ import LoadingSpinner from "@/components/loading-spinner";
 import {generateTasksFromPlan} from "@/app/(actions)/actions/tasks";
 import {useEffect} from "react";
 
-export interface DocumentPageProps {
-    params: {
-        id: string
-    }
-}
 
-
-export default function GeneratingTasksPage({params}: DocumentPageProps) {
+export default function GeneratingTasksPage() {
     const searchParams = useSearchParams()
     const documentUUID = searchParams.get('documentUUID')
     const taskUUID = searchParams.get('taskUUID')

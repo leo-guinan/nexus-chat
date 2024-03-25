@@ -31,7 +31,7 @@ export async function generateMetadata({
   }
 }
 
-export default async function ChatPage({ params }: ContextPageProps) {
+export default async function ContextPage({ params }: ContextPageProps) {
   const session = await auth()
 
   if (!session?.user) {

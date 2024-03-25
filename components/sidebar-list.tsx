@@ -26,6 +26,15 @@ export async function SidebarList({userId: _}: SidebarListProps) {
         <div className="flex flex-1 flex-col overflow-hidden">
             <div className="p-8 text-center">
                 <Link
+                    href={`/today`}
+                    className={cn(
+                        buttonVariants({variant: 'ghost'}),
+                        'group w-full px-8 transition-colors hover:bg-zinc-200/40 dark:hover:bg-zinc-300/10',
+                    )}
+                >
+                    Today
+                </Link>
+                <Link
                     href={`/`}
                     className={cn(
                         buttonVariants({variant: 'ghost'}),

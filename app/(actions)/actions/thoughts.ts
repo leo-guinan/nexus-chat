@@ -65,13 +65,15 @@ export async function addThoughtToContext(contextId: number, thoughtContent: str
                 thoughtId: newThought.id,
                 contextId,
                 userId: session.user.id,
+                type: 'thought',
+                uuid: newThought.uuid,
                 hash
             }
         })
         const vectors = [await embedDocument(doc)]
 
         // Upsert vectors into the Pinecone index
-        await chunkedUpsert(index!, vectors, 'myaicofounderv2', 10);
+        await chunkedUpsert(index!, vectors, process.env.PINECONE_NAMESPACE as string, 10);
 
         const toolsToContext = await prisma.toolToContext.findMany({
             where: {
@@ -162,7 +164,7 @@ export async function filterThoughts(contextId: number, thoughtFilter: string) {
 
 export async function findBestMatchedThoughts(filter: string, userId: string) {
     const pc = new Pinecone();
-    const index = pc.index(process.env.PINECONE_INDEX as string).namespace('myaicofounderv2');
+    const index = pc.index(process.env.PINECONE_INDEX as string).namespace(process.env.PINECONE_NAMESPACE as string);
 
     if (!index) {
         return {
@@ -179,6 +181,9 @@ export async function findBestMatchedThoughts(filter: string, userId: string) {
         filter: {
             userId: {
                 $eq: userId
+            },
+            type: {
+                $eq: 'thought'
             }
         },
     });
