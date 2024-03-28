@@ -15,5 +15,12 @@
       <jdbc-url>jdbc:postgresql://database-5r5h1lmr.clmxs752pn14.us-east-2.rds.amazonaws.com:5432/flightcontrol</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="Neon PG Dev" uuid="7245f167-5801-40fb-bfb7-f07851f853e0">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://ep-noisy-firefly-a5bez5i9.us-east-2.aws.neon.tech:5432/thoughts</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

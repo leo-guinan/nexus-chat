@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
 }
 
 datasource db {
@@ -42,21 +42,22 @@ model Session {
 }
 
 model User {
-  id            String       @id @default(cuid())
-  createdAt     DateTime     @default(now())
-  email         String       @unique
-  emailVerified DateTime?
-  name          String?
-  role          String       @default("user")
-  thoughts      Thought[]
-  communities   Community[]
-  memberships   Membership[]
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  contexts      Context[]
-  tasks         Task[]
-  intents       Intent[]
+  id              String           @id @default(cuid())
+  createdAt       DateTime         @default(now())
+  email           String           @unique
+  emailVerified   DateTime?
+  name            String?
+  role            String           @default("user")
+  thoughts        Thought[]
+  communities     Community[]
+  memberships     Membership[]
+  image           String?
+  accounts        Account[]
+  sessions        Session[]
+  contexts        Context[]
+  tasks           Task[]
+  intents         Intent[]
+  googleCalendars GoogleCalendar[] // Relation to Google Calendar accounts
 }
 
 model VerificationToken {
@@ -93,7 +94,7 @@ model Context {
   path          String?
   ToolToContext ToolToContext[]
   tasks         Task[]
-  goal         String?
+  goal          String?
 
   @@unique([ownerId, name])
 }
@@ -141,20 +142,20 @@ enum Trigger {
 }
 
 model Task {
-  id             Int              @id @default(autoincrement())
-  name           String
-  description    String?
-  owner          User             @relation(fields: [ownerId], references: [id])
-  ownerId        String
-  uuid           String           @unique
-  dependencies   TaskDependency[] @relation("dependsOn")
-  dependantOn   TaskDependency[] @relation("dependentOn")
-  contexts       Context[]
+  id           Int              @id @default(autoincrement())
+  name         String
+  description  String?
+  owner        User             @relation(fields: [ownerId], references: [id])
+  ownerId      String
+  uuid         String           @unique
+  dependencies TaskDependency[] @relation("dependsOn")
+  dependantOn  TaskDependency[] @relation("dependentOn")
+  contexts     Context[]
 }
 
 model TaskDependency {
-  dependent        Task @relation("dependentOn", fields: [dependentId], references: [id])
-  dependentId      Int
+  dependent   Task @relation("dependentOn", fields: [dependentId], references: [id])
+  dependentId Int
   dependsOn   Task @relation("dependsOn", fields: [dependsOnId], references: [id])
   dependsOnId Int
 
@@ -162,13 +163,13 @@ model TaskDependency {
 }
 
 model Intent {
-  id        Int      @id @default(autoincrement())
-  content   String
-  owner     User     @relation(fields: [ownerId], references: [id])
-  ownerId   String
-  thoughts  Thought[]
-  createdAt DateTime @default(now())
-  documentUUID String @unique
+  id           Int       @id @default(autoincrement())
+  content      String
+  owner        User      @relation(fields: [ownerId], references: [id])
+  ownerId      String
+  thoughts     Thought[]
+  createdAt    DateTime  @default(now())
+  documentUUID String    @unique
 }
 
 model EntityId {
@@ -181,6 +182,40 @@ model DefaultTool {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   tool      Tool     @relation(fields: [toolId], references: [id])
-  toolId    Int     @unique
+  toolId    Int      @unique
+}
 
+model GoogleCalendar {
+  id           Int             @id @default(autoincrement())
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  userId       String // Foreign key reference to the User model
+  accessToken  String // Encrypted access token
+  refreshToken String? // Encrypted refresh token, nullable because it might not always be provided
+  tokenType    String
+  expiryDate   DateTime // The timestamp when the access token expires
+  user         User            @relation(fields: [userId], references: [id])
+  events       CalendarEvent[]
+  name         String?
+  email       String?
+
+  @@unique([userId, email])
+
+  @@unique([userId, accessToken]) // Ensuring uniqueness for each user's access token
+}
+
+model CalendarEvent {
+  id               Int            @id @default(autoincrement())
+  googleCalendarId Int // Foreign key reference to the GoogleCalendar model
+  googleEventId    String // Unique ID of the event from Google Calendar
+  summary          String?
+  description      String?
+  start            DateTime
+  end              DateTime
+  timeZone         String?
+  location         String?
+  status           String?
+  googleCalendar   GoogleCalendar @relation(fields: [googleCalendarId], references: [id])
+
+  @@index([googleCalendarId]) // Index to improve query performance
 }

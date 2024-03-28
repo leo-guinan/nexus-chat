@@ -66,11 +66,15 @@
 
         --ring: 240 3.7% 15.9%;
 
-        .rbc-header.rbc-today {
+        .rbc-calendar {
+            @apply w-full;
 
-            @apply bg-primary text-primary-foreground;
+            .rbc-header.rbc-today {
+
+                @apply bg-primary text-primary-foreground;
 
 
+            }
         }
     }
 }

@@ -1,7 +1,6 @@
 'use client'
 import {useState} from 'react'
 import {Calendar, dateFnsLocalizer, Event} from 'react-big-calendar'
-import withDragAndDrop, {withDragAndDropProps} from 'react-big-calendar/lib/addons/dragAndDrop'
 import format from 'date-fns/format'
 import parse from 'date-fns/parse'
 import startOfWeek from 'date-fns/startOfWeek'
@@ -13,6 +12,8 @@ import startOfHour from 'date-fns/startOfHour'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import {useTheme} from "next-themes";
+import ConnectedAccounts from "@/components/calendar/connected-accounts";
+import {CalendarEvent, GoogleCalendar } from '@prisma/client/edge'
 
 const locales = {
     'en-US': enUS,
@@ -31,45 +32,42 @@ const localizer = dateFnsLocalizer({
     getDay,
     locales,
 })
+
+
+interface CalendarComponentProps {
+    calendars: GoogleCalendar[]
+    events: CalendarEvent[]
+}
 //@ts-ignore
-const DnDCalendar = withDragAndDrop(Calendar)
-export default function CalendarComponent() {
+export default function CalendarComponent({calendars, events}: CalendarComponentProps) {
     const {theme} = useTheme()
 
-    const [events, setEvents] = useState<Event[]>([
-        {
-            title: 'Learn cool stuff',
-            start,
-            end,
-        },
-    ])
+    const [displayedEvents, setDisplayedEvents] = useState<Event[]>(events.map(event => {
+        return {
+            title: event.summary,
+            start: new Date(event.start),
+            end: new Date(event.end),
+        }
 
-    const onEventResize: withDragAndDropProps['onEventResize'] = data => {
-        const {start, end} = data
+    }))
 
-        setEvents(currentEvents => {
-            const firstEvent = {
-                start: new Date(start),
-                end: new Date(end),
-            }
-            return [...currentEvents, firstEvent]
-        })
-    }
 
-    const onEventDrop: withDragAndDropProps['onEventDrop'] = data => {
-        console.log(data)
-    }
 
     return (
-        <DnDCalendar
-            defaultView='week'
-            events={events}
-            localizer={localizer}
-            onEventDrop={onEventDrop}
-            onEventResize={onEventResize}
-            resizable
-            style={{height: '100vh'}}
-            className=""
-        />
+        <div className="flex">
+
+            <div className="flex flex-row w-3/4">
+                <Calendar
+                    defaultView='week'
+                    events={displayedEvents}
+                    localizer={localizer}
+                    style={{height: '100vh'}}
+                    className=""
+                />
+            </div>
+            <div className="flex w-1/4">
+                <ConnectedAccounts calendars={calendars} />
+            </div>
+        </div>
     )
 }
