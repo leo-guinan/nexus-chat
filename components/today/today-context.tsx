@@ -1,13 +1,11 @@
 'use client'
 
-import {cn} from '@/lib/utils'
 import React, {useEffect, useState} from 'react'
 import ThoughtRecorder from "@/components/thought-recorder";
 import {Thought} from "@/components/thought";
 import {Task, Thought as ThoughtType} from "@/lib/types";
-import {addThoughtToContext, filterThoughts} from "@/app/(actions)/actions/thoughts";
-import ThoughtFilter from "@/components/thought-filter";
-import LoadingSpinner from "@/components/loading-spinner";
+import {addThoughtToContext} from "@/app/(actions)/actions/thoughts";
+import Tasks from "@/components/tasks/tasks";
 
 const IS_PREVIEW = process.env.VERCEL_ENV === 'preview'
 
@@ -17,11 +15,11 @@ export interface ContextProps extends React.ComponentProps<'div'> {
     initialTasks?: Task[]
     contextName: string
     contextId: number
+    userId: string
 }
 
-export function TodayContext({contextId, contextName, initialThoughts, initialTasks, className}: ContextProps) {
+export function TodayContext({contextId, contextName, initialThoughts, initialTasks, className, userId}: ContextProps) {
     const [thoughts, setThoughts] = useState<ThoughtType[]>([])
-    const [waitOn, setWaitOn] = useState<string>("")
 
     useEffect(() => {
         // const newThoughts = initialThoughts?.map((thought) => thought.content) ?? []
@@ -51,29 +49,10 @@ export function TodayContext({contextId, contextName, initialThoughts, initialTa
         }
     }
 
-    const applyFilter = async (thoughtFilter: string) => {
-        if (!thoughtFilter) {
-            setThoughts(initialThoughts ?? [])
-            return
-        }
-        setWaitOn("Filtering thoughts...")
-        const filteredThoughts = await filterThoughts(contextId, thoughtFilter)
-        if ('error' in filteredThoughts) {
-            console.error(filteredThoughts.error)
-            setWaitOn("")
-            return
-        }
-        setThoughts(filteredThoughts)
-        setWaitOn("")
-    }
 
     return (
         <>
-            {waitOn && (
-                <div className={cn('flex justify-center items-center', className)}>
-                    <LoadingSpinner label={waitOn}/>
-                </div>
-            )}
+
             {/*create 2 column tailwind flex container*/}
             <div className="p-4 flex flex-wrap justify-center">
                 <div className="flex flex-col w-1/2">
@@ -81,19 +60,20 @@ export function TodayContext({contextId, contextName, initialThoughts, initialTa
                         <div className="flex flex-col w-1/2">
                             <ThoughtRecorder rememberThought={rememberThought}/>
                         </div>
-                        {!waitOn && (
-                            <div className={`flex flex-wrap justify-center  ${className}`} style={{gap: '1rem'}}>
-                                {thoughts?.map((thought, index) => (
-                                    <div key={index} className='w-full sm:w-1/2 lg:w-1/4 p-2'>
-                                        <Thought thought={thought}/>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                        <div className={`flex flex-wrap justify-center pt-4  ${className}`} style={{gap: '1rem'}}>
+                            {thoughts?.map((thought, index) => (
+                                <div key={index} className='flex justify-center w-full p-2'>
+                                    <Thought thought={thought}/>
+                                </div>
+                            ))}
+                        </div>
+
                     </div>
-                    <div className="flex flex-col w-1/2">
+
+                </div>
+                <div className="flex flex-col w-1/2">
                     {/*    Column for today's tasks*/}
-                    </div>
+                    <Tasks initialTasks={initialTasks ?? []} userId={userId} label={"Today's Tasks"}/>
                 </div>
             </div>
 

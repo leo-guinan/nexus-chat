@@ -26,5 +26,5 @@ export default async function IndexPage() {
 
     if ('error' in context) return null
 
-    return <TodayContext contextId={context.id} contextName={context.name} initialThoughts={context.thoughts} initialTasks={context.tasks}/>
+    return <TodayContext contextId={context.id} contextName={context.name} initialThoughts={context.thoughts} initialTasks={context.tasks} userId={session.user.id}/>
 }

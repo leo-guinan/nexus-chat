@@ -412,9 +412,6 @@ export async function findBestMatchedTasks(filter: string, userId: string) {
             }
         },
     });
-
-    console.log("relatedThoughtVectors", relatedTaskVectors)
-
     const relatedTasks = []
 
     for (let i = 0; i < relatedTaskVectors.matches.length; i++) {
@@ -422,7 +419,7 @@ export async function findBestMatchedTasks(filter: string, userId: string) {
             continue
         }
         // @ts-ignore - covered by if check above, not sure why ts isn't respecting that
-        if (relatedTaskVectors.matches[i].score > 0.8) {
+        if (relatedTaskVectors.matches[i].score > 0.75) {
 
 
             const taskId = relatedTaskVectors.matches[i]?.metadata?.taskId

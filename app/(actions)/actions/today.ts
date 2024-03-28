@@ -21,6 +21,8 @@ export async function createDailyPlan(contextName: string, goal: string) {
     if ('error' in relatedTasks) {
         throw new Error(relatedTasks.error)
     }
+
+
     const summary = relatedThoughts.length > 0 ? await summarizeThoughts(relatedThoughts) : "It's a fresh day!"
 
     await prisma.context.create({

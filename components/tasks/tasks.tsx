@@ -17,9 +17,10 @@ import Task from "@/components/tasks/task";
 interface TasksProps {
     initialTasks: TaskType[]
     userId: string
+    label?: string
 }
 
-export default function Tasks({initialTasks, userId}: TasksProps) {
+export default function Tasks({initialTasks, userId, label = "Tasks"}: TasksProps) {
 
     const [prioritizedTasks, setPrioritizedTasks] = useState<TaskType[]>(initialTasks)
 
@@ -64,11 +65,11 @@ export default function Tasks({initialTasks, userId}: TasksProps) {
     }
 
     return (
-        <div className="grid gap-4 w-full lg:grid-cols-2">
+        <div className="grid gap-4 w-full">
             <div className="space-y-4">
                 <Card>
                     <CardHeader>
-                        <h2 className="text-lg font-semibold">Tasks</h2>
+                        <h2 className="text-lg font-semibold">{label}</h2>
                         <p className="text-sm font-medium leading-none text-gray-500">Drag and drop to reorder</p>
                     </CardHeader>
                     <CardContent className="p-0">
