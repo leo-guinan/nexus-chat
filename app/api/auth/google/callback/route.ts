@@ -5,7 +5,7 @@ import {auth} from "@/auth";
 import {google as googleapis} from 'googleapis';
 import {add} from 'date-fns';
 
-export const runtime = 'node'
+export const runtime = 'nodejs'
 
 const client = new OAuth2Client(
     process.env.GOOGLE_CLIENT_ID,

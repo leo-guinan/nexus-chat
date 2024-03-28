@@ -1,7 +1,7 @@
 import {OAuth2Client} from 'google-auth-library';
 import {NextResponse} from "next/server";
 
-export const runtime = 'node'
+export const runtime = 'nodejs'
 
 const client = new OAuth2Client(
     process.env.GOOGLE_CLIENT_ID,
