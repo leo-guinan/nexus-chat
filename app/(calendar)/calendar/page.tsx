@@ -1,6 +1,8 @@
 import {auth} from "@/auth";
 import CalendarComponent from "@/components/calendar/calendar";
-import {getCalendarsAndEvents} from "@/app/(actions)/actions/calendar";
+import {getCalendarsAndEvents} from "@/app/actions/calendar";
+import Upgrade from "@/components/upgrade/upgrade";
+import {isUserPremium} from "@/app/actions/users";
 
 
 export default async function CalendarPage() {
@@ -12,6 +14,12 @@ export default async function CalendarPage() {
     const results = await getCalendarsAndEvents()
     if ('error' in results ) return null;
     const {calendars, events} = results
+
+    const premium = await isUserPremium()
+
+    if (!premium) {
+        return <Upgrade premium={premium} />
+    }
 
     return (
         <CalendarComponent

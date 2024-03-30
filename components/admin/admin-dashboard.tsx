@@ -1,6 +1,6 @@
 import {ArrowDownIcon, ArrowUpIcon} from '@heroicons/react/20/solid'
 import {cn} from "@/lib/utils";
-import {embedExistingTasks, getStats} from "@/app/(actions)/actions/admin";
+import {embedExistingTasks, getStats} from "@/app/actions/admin";
 import EmbedTasks from "@/components/admin/embed-tasks";
 
 

@@ -1,6 +1,6 @@
 import {auth} from "@/auth";
 import ToolDashboard from "@/components/tool/tool-dashboard";
-import {getMostRecentContext} from "@/app/(actions)/actions/contexts";
+import {getMostRecentContext} from "@/app/actions/contexts";
 
 export default async function IndexPage() {
     const session = await auth()

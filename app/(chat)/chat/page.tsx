@@ -1,11 +1,18 @@
-import { nanoid } from '@/lib/utils'
-import { Chat } from '@/components/chat'
+import {nanoid} from '@/lib/utils'
+import {Chat} from '@/components/chat'
 import {auth} from "@/auth";
+import {isUserPremium} from "@/app/actions/users";
+import Upgrade from "@/components/upgrade/upgrade";
 
 export default async function IndexPage() {
-  const id = nanoid()
-  const session = await auth()
+    const id = nanoid()
+    const session = await auth()
     if (!session) return null
-  console.log("id", id)
-  return <Chat id={id} userId={session.user.id} />
+
+    const premium = await isUserPremium()
+
+    if (!premium) {
+        return <Upgrade premium={premium}/>
+    }
+    return <Chat id={id} userId={session.user.id}/>
 }

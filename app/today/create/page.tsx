@@ -4,7 +4,7 @@ import {auth} from "@/auth";
 import {useRouter, useSearchParams} from "next/navigation";
 import {useEffect} from "react";
 import LoadingSpinner from "@/components/loading-spinner";
-import {createDailyPlan} from "@/app/(actions)/actions/today";
+import {createDailyPlan} from "@/app/actions/today";
 
 
 export default function CreateTodayPage() {

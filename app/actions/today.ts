@@ -1,8 +1,8 @@
 "use server"
 import {prisma} from "@/lib/utils";
-import {findBestMatchedThoughts} from "@/app/(actions)/actions/thoughts";
-import {findBestMatchedTasks} from "@/app/(actions)/actions/tasks";
-import {summarizeThoughts} from "@/app/(actions)/actions/text";
+import {findBestMatchedThoughts} from "@/app/actions/thoughts";
+import {findBestMatchedTasks} from "@/app/actions/tasks";
+import {summarizeThoughts} from "@/app/actions/text";
 import {auth} from "@/auth";
 
 export async function createDailyPlan(contextName: string, goal: string) {

@@ -4,7 +4,7 @@ import { notFound, redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { Chat } from '@/components/chat'
 import {ThoughtContext} from "@/components/thought-context";
-import {getContext} from "@/app/(actions)/actions/contexts";
+import {getContext} from "@/app/actions/contexts";
 
 export interface ContextPageProps {
   params: {

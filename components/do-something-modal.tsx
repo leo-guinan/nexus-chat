@@ -4,8 +4,8 @@ import {Dialog, Transition} from '@headlessui/react'
 import {CheckIcon} from '@heroicons/react/24/outline'
 import {type Message} from "ai/react";
 import {Thought} from "@/lib/types";
-import {findRelatedThoughts} from "@/app/(actions)/actions/thoughts";
-import {generateDocument} from "@/app/(actions)/actions/documents";
+import {findRelatedThoughts} from "@/app/actions/thoughts";
+import {generateDocument} from "@/app/actions/documents";
 import Link from "next/link";
 import LoadingSpinner from "@/components/loading-spinner";
 import Intent from "@/components/intent";

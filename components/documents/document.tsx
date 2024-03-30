@@ -1,7 +1,7 @@
 'use client'
 import {BubbleMenu, EditorContent, FloatingMenu, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import {saveDocument} from "@/app/(actions)/actions/documents";
+import {saveDocument} from "@/app/actions/documents";
 import {WithId, Document} from "mongodb";
 import { Markdown } from 'tiptap-markdown';
 

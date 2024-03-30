@@ -1,12 +1,12 @@
 'use server'
 import {nanoid, prisma} from "@/lib/utils"
-import {getDocument} from "@/app/(actions)/actions/documents";
+import {getDocument} from "@/app/actions/documents";
 import {auth} from "@/auth";
 import {Task} from "@/lib/types";
 import {Pinecone} from "@pinecone-database/pinecone";
 import md5 from "md5";
 import {Document} from "@pinecone-database/doc-splitter";
-import {embedDocument} from "@/app/(actions)/actions/embeddings";
+import {embedDocument} from "@/app/actions/embeddings";
 import {chunkedUpsert} from "@/utils/chunkedUpsert";
 import {getEmbeddings} from "@/utils/embeddings";
 

@@ -4,8 +4,8 @@ import {cache} from 'react'
 import Link from "next/link";
 import {cn} from "@/lib/utils";
 import {buttonVariants} from "@/components/ui/button";
-import {getChats} from "@/app/(actions)/actions/chats";
-import {getContexts} from "@/app/(actions)/actions/contexts";
+import {getChats} from "@/app/actions/chats";
+import {getContexts} from "@/app/actions/contexts";
 
 interface SidebarListProps {
     userId?: string
@@ -52,6 +52,26 @@ export async function SidebarList({userId: _}: SidebarListProps) {
                 >
                     Tasks
                 </Link>
+
+                <div className="relative py-4">
+                    <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                        <div className="w-full border-t border-gray-300"/>
+                    </div>
+                    <div className="relative flex justify-center">
+                        <span className="bg-white dark:bg-zinc-950 px-2 text-sm text-gray-500">Premium</span>
+                    </div>
+                </div>
+
+                <Link
+                    href={`/calendar`}
+                    className={cn(
+                        buttonVariants({variant: 'ghost'}),
+                        'group w-full px-8 transition-colors hover:bg-zinc-200/40 dark:hover:bg-zinc-300/10',
+                    )}
+                >
+                    Calendar
+                </Link>
+
                 <Link
                     href={`/chat`}
                     className={cn(
@@ -61,6 +81,7 @@ export async function SidebarList({userId: _}: SidebarListProps) {
                 >
                     New Chat
                 </Link>
+
             </div>
             {/*<div className="p-8 text-center">Contexts</div>*/}
             {/*<div className="flex-1 overflow-auto">*/}

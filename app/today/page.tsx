@@ -1,6 +1,6 @@
 import {ThoughtContext} from "@/components/thought-context";
 import {auth} from "@/auth";
-import {getLimitedContext} from "@/app/(actions)/actions/contexts";
+import {getLimitedContext} from "@/app/actions/contexts";
 import {formatToday} from "@/lib/utils";
 import {TodayContext} from "@/components/today/today-context";
 import StartDay from "@/components/today/start-day";

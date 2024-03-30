@@ -5,7 +5,7 @@ import React, {useEffect, useState} from 'react'
 import ThoughtRecorder from "@/components/thought-recorder";
 import {Thought} from "@/components/thought";
 import {Thought as ThoughtType} from "@/lib/types";
-import {addThoughtToContext, filterThoughts} from "@/app/(actions)/actions/thoughts";
+import {addThoughtToContext, filterThoughts} from "@/app/actions/thoughts";
 import ThoughtFilter from "@/components/thought-filter";
 import LoadingSpinner from "@/components/loading-spinner";
 

@@ -1,6 +1,6 @@
 import {auth} from "@/auth";
 import ToolDetails from "@/components/tool/tool-details";
-import {getTool} from "@/app/(actions)/actions/tools";
+import {getTool} from "@/app/actions/tools";
 
 export interface ToolPageProps {
     params: {

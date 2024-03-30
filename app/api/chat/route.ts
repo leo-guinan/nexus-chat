@@ -9,7 +9,7 @@ import {ConversationChain} from "langchain/chains";
 import {Pinecone} from "@pinecone-database/pinecone";
 import {getEmbeddings} from "@/utils/embeddings";
 import {prisma} from "@/lib/utils";
-import {findBestMatchedThoughts} from "@/app/(actions)/actions/thoughts";
+import {findBestMatchedThoughts} from "@/app/actions/thoughts";
 
 
 export const runtime = "nodejs";

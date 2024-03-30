@@ -6,8 +6,8 @@ import {Document} from "@pinecone-database/doc-splitter";
 import {chunkedUpsert} from "@/utils/chunkedUpsert";
 import {Trigger} from "@prisma/client/edge";
 import {formatDate, nanoid, prisma} from "@/lib/utils";
-import {runTool} from "@/app/(actions)/actions/tools";
-import {embedDocument} from "@/app/(actions)/actions/embeddings";
+import {runTool} from "@/app/actions/tools";
+import {embedDocument} from "@/app/actions/embeddings";
 import {Thought} from "@/lib/types";
 import {getEmbeddings} from "@/utils/embeddings";
 

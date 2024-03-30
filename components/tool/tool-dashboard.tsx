@@ -2,7 +2,7 @@ import ToolList from "@/components/tool/tool-list";
 import React from "react";
 import AddTool from "@/components/tool/add-tool";
 import {auth} from "@/auth";
-import {addTool, getTools} from "@/app/(actions)/actions/tools";
+import {addTool, getTools} from "@/app/actions/tools";
 
 export default async function ToolDashboard({currentTool}: { currentTool?: string }) {
 

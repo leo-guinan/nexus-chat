@@ -1,12 +1,10 @@
 'use server'
-import { prisma } from "@/lib/utils"
+import {prisma} from "@/lib/utils"
 import {Pinecone} from "@pinecone-database/pinecone";
 import md5 from "md5";
 import {Document} from "@pinecone-database/doc-splitter";
-import {embedDocument} from "@/app/(actions)/actions/embeddings";
+import {embedDocument} from "@/app/actions/embeddings";
 import {chunkedUpsert} from "@/utils/chunkedUpsert";
-import {Trigger} from "@prisma/client/edge";
-import {runTool} from "@/app/(actions)/actions/tools";
 
 export async function isUserAdmin(userId?: string | null) {
     if (!userId) {
@@ -27,17 +25,6 @@ export async function isUserAdmin(userId?: string | null) {
 }
 
 export async function getStats() {
-    // example stats array
-    //const stats = [
-    //   { id: 1, name: 'Total Subscribers', stat: '71,897', icon: UsersIcon, change: '122', changeType: 'increase' },
-    //   { id: 2, name: 'Avg. Open Rate', stat: '58.16%', icon: EnvelopeOpenIcon, change: '5.4%', changeType: 'increase' },
-    //   { id: 3, name: 'Avg. Click Rate', stat: '24.57%', icon: CursorArrowRaysIcon, change: '3.2%', changeType: 'decrease' },
-    // ]
-    //
-    // const previousTotalTasks =  await prisma.$queryRaw`
-    // SELECT COUNT(*) as totalTasks FROM "Task" where "createdAt" < NOW() - INTERVAL '7 days';
-    // `
-    // console.log("previousTotalTasks", previousTotalTasks)
 
     const previousTotalUsers = await prisma.$queryRaw`
         SELECT COUNT(*) as totalUsers
@@ -53,11 +40,6 @@ export async function getStats() {
     `
     console.log("previousTotalThoughts", previousTotalThoughts)
 
-
-    // const currentTotalTasks =  await prisma.$queryRaw`
-    // SELECT COUNT(*) as totalTasks FROM "Task" where "createdAt" > NOW() - INTERVAL '7 days';
-    // `
-    // console.log("currentTotalTasks", currentTotalTasks)
 
     const currentTotalUsers = await prisma.$queryRaw`
         SELECT COUNT(*) as totalUsers
@@ -134,35 +116,32 @@ export async function getStats() {
 }
 
 
-
-
 export async function embedExistingTasks() {
     const tasks = await prisma.task.findMany({})
 
     const pc = new Pinecone();
-        const index = pc.index(process.env.PINECONE_INDEX as string);
+    const index = pc.index(process.env.PINECONE_INDEX as string);
 
 
-        (async function loop() {
-            for (let i = 0; i < tasks.length; i++) {
-                const task = tasks[i]
-                const taskContent = `${task.name}: ${task.description}`
-                const hash = md5(taskContent);
-                const doc = new Document({
-                    pageContent: taskContent,
-                    metadata: {
-                        taskId: task.id,
-                        userId: task.ownerId,
-                        uuid: task.uuid,
-                        hash,
-                        type: 'task'
-                    }
-                })
-                const vectors = [await embedDocument(doc)]
-                await chunkedUpsert(index!, vectors, process.env.PINECONE_NAMESPACE as string, 10);
-            }
-        })();
-
+    (async function loop() {
+        for (let i = 0; i < tasks.length; i++) {
+            const task = tasks[i]
+            const taskContent = `${task.name}: ${task.description}`
+            const hash = md5(taskContent);
+            const doc = new Document({
+                pageContent: taskContent,
+                metadata: {
+                    taskId: task.id,
+                    userId: task.ownerId,
+                    uuid: task.uuid,
+                    hash,
+                    type: 'task'
+                }
+            })
+            const vectors = [await embedDocument(doc)]
+            await chunkedUpsert(index!, vectors, process.env.PINECONE_NAMESPACE as string, 10);
+        }
+    })();
 
 
     console.log("tasks", tasks)

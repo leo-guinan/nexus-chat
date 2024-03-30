@@ -1,6 +1,6 @@
 import {auth} from "@/auth";
 import Tasks from "@/components/tasks/tasks";
-import {getTaskDetails, getTasks} from "@/app/(actions)/actions/tasks";
+import {getTaskDetails, getTasks} from "@/app/actions/tasks";
 import TaskDetails from "@/components/tasks/task-details";
 
 export interface TaskPageProps {

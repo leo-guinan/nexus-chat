@@ -3,7 +3,7 @@ import { notFound, redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
 import { Chat } from '@/components/chat'
-import {getChat} from "@/app/(actions)/actions/chats";
+import {getChat} from "@/app/actions/chats";
 
 export interface ChatPageProps {
   params: {

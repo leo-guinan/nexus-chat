@@ -3,11 +3,11 @@ import {redirect} from 'next/navigation'
 
 import {auth} from '@/auth'
 import {Chat} from '@/components/chat'
-import {getChat} from "@/app/(actions)/actions/chats";
-import {getDocument} from "@/app/(actions)/actions/documents";
+import {getChat} from "@/app/actions/chats";
+import {getDocument} from "@/app/actions/documents";
 import Document from "@/components/documents/document";
 import GenerateTasks from "@/components/tasks/generate-tasks";
-import {generateTasksFromPlan} from "@/app/(actions)/actions/tasks";
+import {generateTasksFromPlan} from "@/app/actions/tasks";
 
 export interface DocumentPageProps {
     params: {

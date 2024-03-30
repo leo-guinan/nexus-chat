@@ -1,6 +1,6 @@
 import {auth} from "@/auth";
 import AdminDashboard from "@/components/admin/admin-dashboard";
-import {isUserAdmin} from "@/app/(actions)/actions/admin";
+import {isUserAdmin} from "@/app/actions/admin";
 
 export default async function IndexPage() {
     const session = await auth()

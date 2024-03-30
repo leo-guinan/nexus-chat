@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -42,11 +42,13 @@ model Session {
 }
 
 model User {
-  id              String           @id @default(cuid())
-  createdAt       DateTime         @default(now())
-  email           String           @unique
-  emailVerified   DateTime?
-  name            String?
+  id               String    @id @default(cuid())
+  createdAt        DateTime  @default(now())
+  email            String    @unique
+  emailVerified    DateTime?
+  name             String?
+  stripeCustomerId String?
+
   role            String           @default("user")
   thoughts        Thought[]
   communities     Community[]
@@ -57,7 +59,20 @@ model User {
   contexts        Context[]
   tasks           Task[]
   intents         Intent[]
+  subscriptions   Subscription[]
   googleCalendars GoogleCalendar[] // Relation to Google Calendar accounts
+}
+
+model Subscription {
+  id                   Int      @id @default(autoincrement())
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  active               Boolean  @default(true)
+  stripeSubscriptionId String?
+  user                 User     @relation(fields: [userId], references: [id])
+  userId               String
+  price                Price    @relation(fields: [priceId], references: [id])
+  priceId              Int
 }
 
 model VerificationToken {
@@ -197,10 +212,9 @@ model GoogleCalendar {
   user         User            @relation(fields: [userId], references: [id])
   events       CalendarEvent[]
   name         String?
-  email       String?
+  email        String?
 
   @@unique([userId, email])
-
   @@unique([userId, accessToken]) // Ensuring uniqueness for each user's access token
 }
 
@@ -218,4 +232,29 @@ model CalendarEvent {
   googleCalendar   GoogleCalendar @relation(fields: [googleCalendarId], references: [id])
 
   @@index([googleCalendarId]) // Index to improve query performance
+}
+
+model Price {
+  id            Int            @id @default(autoincrement())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  active        Boolean        @default(true)
+  amount        Int
+  currency      String
+  interval      String
+  stripePriceId String?
+  product       Product        @relation(fields: [productId], references: [id])
+  productId     Int
+  subscriptions Subscription[]
+}
+
+model Product {
+  id              Int      @id @default(autoincrement())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  active          Boolean  @default(true)
+  name            String
+  description     String?
+  stripeProductId String?
+  prices          Price[]
 }

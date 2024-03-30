@@ -3,7 +3,7 @@ import {type Metadata} from 'next'
 import {useRouter, useSearchParams} from 'next/navigation'
 import GenerateTasks from "@/components/tasks/generate-tasks";
 import LoadingSpinner from "@/components/loading-spinner";
-import {generateTasksFromPlan} from "@/app/(actions)/actions/tasks";
+import {generateTasksFromPlan} from "@/app/actions/tasks";
 import {useEffect} from "react";
 
 
