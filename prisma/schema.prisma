@@ -220,7 +220,7 @@ model GoogleCalendar {
 
 model CalendarEvent {
   id               Int            @id @default(autoincrement())
-  googleCalendarId Int // Foreign key reference to the GoogleCalendar model
+  googleCalendarId Int? // Foreign key reference to the GoogleCalendar model
   googleEventId    String // Unique ID of the event from Google Calendar
   summary          String?
   description      String?
@@ -229,7 +229,7 @@ model CalendarEvent {
   timeZone         String?
   location         String?
   status           String?
-  googleCalendar   GoogleCalendar @relation(fields: [googleCalendarId], references: [id])
+  googleCalendar   GoogleCalendar? @relation(fields: [googleCalendarId], references: [id])
 
   @@index([googleCalendarId]) // Index to improve query performance
 }
