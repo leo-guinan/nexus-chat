@@ -38,6 +38,7 @@ export default function PrivacyPage() {
                         service, to provide you with updates and other information relating to the app, and for
                         marketing and promotional purposes.
                     </li>
+                    <li>My AI Cofounder&apost;s use and transfer to any other app of information received from Google APIs will adhere to <a href="https://developers.google.com/terms/api-services-user-data-policy#additional_requirements_for_specific_api_scopes">Google API Services User Data Policy</a>, including the Limited Use requirements.</li>
                 </ul>
 
                 <h2>Information Sharing and Disclosure</h2>

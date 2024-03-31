@@ -61,6 +61,7 @@ model User {
   intents         Intent[]
   subscriptions   Subscription[]
   googleCalendars GoogleCalendar[] // Relation to Google Calendar accounts
+  acceptedPolicy  DateTime?
 }
 
 model Subscription {
