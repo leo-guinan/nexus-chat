@@ -230,7 +230,7 @@ model CalendarEvent {
   timeZone         String?
   location         String?
   status           String?
-  googleCalendar   GoogleCalendar? @relation(fields: [googleCalendarId], references: [id])
+  googleCalendar   GoogleCalendar? @relation(fields: [googleCalendarId], references: [id], onDelete: SetNull)
 
   @@index([googleCalendarId]) // Index to improve query performance
 }
