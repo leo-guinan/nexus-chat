@@ -6,12 +6,15 @@ import {NextResponse} from "next/server";
 export default auth((req) => {
     if (!req?.auth?.user) {
         // Redirect to login if not authenticated
-        return NextResponse.rewrite(new URL('/sign-in', req.url))
+        const signInUrl = new URL('/sign-in', req.nextUrl.origin)
+        signInUrl.searchParams.set('callbackUrl', req.nextUrl.pathname)
+        return NextResponse.rewrite(signInUrl)
+
     }
 
 
     if (!(req.auth.user as User).acceptedPolicy) {
-        return NextResponse.rewrite(new URL('/data', req.url))
+        return NextResponse.rewrite(new URL('/data', req.nextUrl.origin))
     }
     return NextResponse.next()
 })
