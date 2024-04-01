@@ -4,10 +4,13 @@ import {NextResponse} from "next/server";
 
 
 export default auth((req) => {
+    console.log("req.nextUrl", req.nextUrl)
+    console.log("req.nextUrl.origin", req.nextUrl.origin)
+    console.log("req.url", req.url)
     if (!req?.auth?.user) {
         // Redirect to login if not authenticated
         const signInUrl = new URL('/sign-in', req.nextUrl.origin)
-        signInUrl.searchParams.set('callbackUrl', req.nextUrl.pathname)
+        signInUrl.searchParams.set('next', req.url)
         return NextResponse.rewrite(signInUrl)
 
     }
