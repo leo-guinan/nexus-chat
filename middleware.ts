@@ -8,12 +8,14 @@ export default auth((req) => {
     console.log("req.nextUrl.origin", req.nextUrl.origin)
     console.log("req.url", req.url)
     if (!req?.auth?.user) {
-        if (req.url === '/sign-in') {
+        console.log('req.url.split(\'?\')[0].endsWith(\'/sign-in\')', req.url.split('?')[0].endsWith('/sign-in'))
+        if (req.url.split('?')[0].endsWith('/sign-in')) {
             return NextResponse.next()
         }
         // Redirect to login if not authenticated
         const signInUrl = new URL('/sign-in', req.nextUrl.origin)
         signInUrl.searchParams.set('next', req.url)
+        console.log("signInUrl", signInUrl.toString())
         return NextResponse.rewrite(signInUrl)
 
     }
