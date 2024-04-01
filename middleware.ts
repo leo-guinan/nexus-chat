@@ -10,7 +10,7 @@ export default auth((req) => {
     if (!req?.auth?.user) {
         console.log('req.url.split(\'?\')[0].endsWith(\'/sign-in\')', req.url.split('?')[0].endsWith('/sign-in'))
         if (req.url.split('?')[0].endsWith('/sign-in')) {
-            return NextResponse.next()
+            return;
         }
         // Redirect to login if not authenticated
         const signInUrl = new URL('/sign-in', req.nextUrl.origin)
@@ -22,9 +22,13 @@ export default auth((req) => {
 
 
     if (!(req.auth.user as User).acceptedPolicy) {
+        // make sure we don't end up in an infinite loop
+        if (req.url.split('?')[0].endsWith('/data')) {
+            return;
+        }
         return NextResponse.rewrite(new URL('/data', req.nextUrl.origin))
     }
-    return NextResponse.next()
+    return NextResponse.next();
 })
 
 export const config = {
