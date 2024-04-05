@@ -33,7 +33,7 @@ export default function Document({content, documentId, userId}: DocumentProps) {
 
     return (
         <div className="flex p-4">
-            <EditorContent editor={editor} className="border h-3/4 overflow-scroll "/>
+            <EditorContent editor={editor} className="border h-3/4 overflow-scroll min-h-96"/>
             {/*<FloatingMenu editor={editor}>This is the floating menu</FloatingMenu>*/}
             {/*<BubbleMenu editor={editor}>This is the bubble menu</BubbleMenu>*/}
         </div>

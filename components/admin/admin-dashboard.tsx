@@ -1,7 +1,8 @@
 import {ArrowDownIcon, ArrowUpIcon} from '@heroicons/react/20/solid'
 import {cn} from "@/lib/utils";
-import {embedExistingTasks, getStats} from "@/app/actions/admin";
+import {embedExistingTasks, getStats, queryPodcasts} from "@/app/actions/admin";
 import EmbedTasks from "@/components/admin/embed-tasks";
+import {Button} from "@/components/ui/button";
 
 
 export default async function AdminDashboard() {
@@ -14,10 +15,18 @@ export default async function AdminDashboard() {
         await embedExistingTasks()
     }
 
+    const handleQuery = async () => {
+        "use server"
+        await queryPodcasts("investor who wants to find new business models")
+    }
+
     return (
         <div className="p-4">
             <div className="flex justify-between">
                 <EmbedTasks handleEmbedTasks={handleEmbedTasks}/>
+                <form action={handleQuery}>
+                    <Button type="submit">Query Podcasts</Button>
+                </form>
             </div>
             <h3 className="text-base font-semibold leading-6">Last 30 days</h3>
 

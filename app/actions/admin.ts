@@ -147,3 +147,18 @@ export async function embedExistingTasks() {
     console.log("tasks", tasks)
     return tasks
 }
+
+export async function queryPodcasts(query: string) {
+    const res = await fetch('http://localhost:8000/api/podcast/find/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Api-Key ${process.env.API_KEY}`
+                },
+                body: JSON.stringify({query}),
+            });
+
+    const data = await res.json()
+    console.log("data", data)
+    return data
+}

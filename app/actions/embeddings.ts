@@ -20,8 +20,7 @@ export async function embedDocument(doc: Document): Promise<PineconeRecord> {
             id: hash, // The ID of the vector is the hash of the document content
             values: embedding, // The vector values are the OpenAI embeddings
             metadata: { // The metadata includes details about the document
-                chunk: doc.pageContent, // The chunk of text that the vector represents
-                text: doc.metadata.text as string, // The text of the document
+                text: doc.pageContent, // The chunk of text that the vector represents
                 url: doc.metadata.url as string, // The URL where the document was found
                 hash: doc.metadata.hash as string, // The hash of the document content
                     ...doc.metadata, // Include any other metadata from the document

@@ -9,6 +9,7 @@ import {getContexts} from "@/app/actions/contexts";
 
 interface SidebarListProps {
     userId?: string
+    isAdmin: boolean
     children?: React.ReactNode
 }
 
@@ -20,7 +21,7 @@ const loadContexts = cache(async (userId?: string) => {
     return await getContexts(userId)
 })
 
-export async function SidebarList({userId: _}: SidebarListProps) {
+export async function SidebarList({userId: _, isAdmin}: SidebarListProps) {
 
     return (
         <div className="flex flex-1 flex-col overflow-hidden">
@@ -81,6 +82,46 @@ export async function SidebarList({userId: _}: SidebarListProps) {
                 >
                     New Chat
                 </Link>
+
+                {isAdmin && (
+                    <div>
+                        <div className="relative py-4">
+                            <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                                <div className="w-full border-t border-gray-300"/>
+                            </div>
+                            <div className="relative flex justify-center">
+                                <span className="bg-white dark:bg-zinc-950 px-2 text-sm text-gray-500">Admin</span>
+                            </div>
+                        </div>
+                        <Link
+                            href={`/submind/new`}
+                            className={cn(
+                                buttonVariants({variant: 'ghost'}),
+                                'group w-full px-8 transition-colors hover:bg-zinc-200/40 dark:hover:bg-zinc-300/10',
+                            )}
+                        >
+                            Create Submind
+                        </Link>
+                        <Link
+                            href={`/admin`}
+                            className={cn(
+                                buttonVariants({variant: 'ghost'}),
+                                'group w-full px-8 transition-colors hover:bg-zinc-200/40 dark:hover:bg-zinc-300/10',
+                            )}
+                        >
+                            Admin Dashboard
+                        </Link>
+                        <Link
+                            href={`/question`}
+                            className={cn(
+                                buttonVariants({variant: 'ghost'}),
+                                'group w-full px-8 transition-colors hover:bg-zinc-200/40 dark:hover:bg-zinc-300/10',
+                            )}
+                        >
+                            Open Questions
+                        </Link>
+                    </div>
+                )}
 
             </div>
             {/*<div className="p-8 text-center">Contexts</div>*/}

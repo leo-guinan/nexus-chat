@@ -62,6 +62,9 @@ model User {
   subscriptions   Subscription[]
   googleCalendars GoogleCalendar[] // Relation to Google Calendar accounts
   acceptedPolicy  DateTime?
+  subminds        Submind[]
+  questions       Question[]
+
 }
 
 model Subscription {
@@ -111,6 +114,8 @@ model Context {
   ToolToContext ToolToContext[]
   tasks         Task[]
   goal          String?
+  subminds      Submind[]
+  questions     Question[]
 
   @@unique([ownerId, name])
 }
@@ -125,6 +130,9 @@ model Thought {
   contextId Int
   intents   Intent[]
   uuid      String?
+  submind   Submind? @relation(name: "SubmindInternalThoughts",fields: [submindId], references: [id])
+  submindId Int?
+  relatedSubminds Submind[] @relation(name: "SubmindRelatedThoughts")
 }
 
 model Tool {
@@ -155,6 +163,12 @@ enum Trigger {
   ACTION
   EVENT
   THOUGHT
+}
+
+enum SubmindStatus {
+  ACTIVE
+  READY
+  COMPLETED
 }
 
 model Task {
@@ -258,4 +272,55 @@ model Product {
   description     String?
   stripeProductId String?
   prices          Price[]
+}
+
+model Submind {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  description String?
+  owner     User     @relation(fields: [ownerId], references: [id])
+  ownerId   String
+  thoughts  Thought[] @relation("SubmindInternalThoughts")
+  relatedThoughts Thought[] @relation("SubmindRelatedThoughts")
+  context Context @relation(fields: [contextId], references: [id])
+  contextId Int
+  questions Question[]
+  documentUUID String @unique
+  status SubmindStatus @default(READY)
+  lastRun DateTime?
+  mindUUID String?
+  answers Answer[]
+}
+
+model Question {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  content   String
+  owner     User      @relation(fields: [ownerId], references: [id])
+  ownerId   String
+  submind   Submind?   @relation(fields: [submindId], references: [id])
+  submindId Int?
+  context   Context   @relation(fields: [contextId], references: [id])
+  contextId Int
+  forHuman Boolean @default(false)
+  forInternet Boolean @default(false)
+  answers  Answer[]
+
+}
+
+model Answer {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  content   String?
+  question  Question  @relation(fields: [questionId], references: [id])
+  questionId Int
+  source    String?
+  requestId String?
+  submind   Submind?   @relation(fields: [submindId], references: [id])
+  submindId Int?
+
 }
