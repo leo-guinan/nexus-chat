@@ -9,9 +9,10 @@ import { IconPlus } from '@/components/ui/icons'
 
 interface ChatHistoryProps {
   userId?: string
+    isAdmin: boolean
 }
 
-export async function ChatHistory({ userId }: ChatHistoryProps) {
+export async function ChatHistory({ userId, isAdmin }: ChatHistoryProps) {
   return (
     <div className="flex flex-col h-full">
       <div className="px-2 my-4">
@@ -39,7 +40,7 @@ export async function ChatHistory({ userId }: ChatHistoryProps) {
         }
       >
         {/* @ts-ignore */}
-        <SidebarList userId={userId} />
+        <SidebarList userId={userId} isAdmin={isAdmin} />
       </React.Suspense>
     </div>
   )
