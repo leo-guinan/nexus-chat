@@ -42,6 +42,8 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@stripe/react-stripe-js": "^2.6.2",
     "@stripe/stripe-js": "^3.0.6",
+    "@tiptap/extension-placeholder": "^2.2.6",
+    "@tiptap/extension-typography": "^2.2.6",
     "@tiptap/pm": "^2.2.4",
     "@tiptap/react": "^2.2.4",
     "@tiptap/starter-kit": "^2.2.4",

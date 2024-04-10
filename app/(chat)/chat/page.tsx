@@ -14,5 +14,5 @@ export default async function IndexPage() {
     if (!premium) {
         return <Upgrade premium={premium}/>
     }
-    return <Chat id={id} userId={session.user.id}/>
+    return <Chat id={id} userId={session.user.id} initialMessages={[]}/>
 }

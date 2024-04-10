@@ -1,38 +1,32 @@
 'use client'
+import {ChatList} from "@/components/chat-list";
+import {ChatScrollAnchor} from "@/components/chat-scroll-anchor";
+import {EmptyScreen} from "@/components/empty-screen";
+import {ChatPanel} from "@/components/chat-panel";
+import {useState} from "react";
+import {Message} from "ai";
+import {sendOnboardingChatMessage} from "@/app/actions/onboarding";
 
-import {type Message} from 'ai/react'
-
-import {cn} from '@/lib/utils'
-import {ChatList} from '@/components/chat-list'
-import {ChatPanel} from '@/components/chat-panel'
-import {EmptyScreen} from '@/components/empty-screen'
-import {ChatScrollAnchor} from '@/components/chat-scroll-anchor'
-import {ComponentProps, useState} from "react";
-import {sendChatMessage} from "@/app/actions/chats";
-
-export interface ChatProps extends ComponentProps<'div'> {
-    initialMessages: Message[]
-    id?: string
-    userId?: string
+interface OnboardingChatProps {
+    messages: Message[]
 }
 
-export function Chat({ initialMessages, className}: ChatProps) {
-    const [messages, setMessages] = useState(initialMessages)
-    const [input, setInput] = useState('')
+export default function OnboardingChat({messages}: OnboardingChatProps) {
+    const [displayedMessages, setDisplayedMessages] = useState<Message[]>(messages)
     const [isLoading, setIsLoading] = useState(false)
-
+    const [input, setInput] = useState('')
     const sendMessage = async (message: { content: string, role: "user" }) => {
         setIsLoading(true)
         try {
             console.log("Getting response...")
-            setMessages([...messages, {
+            setDisplayedMessages([...displayedMessages, {
                 content: message.content,
                 role: message.role,
                 createdAt: new Date(),
                 id: "temp"
             }])
 
-            const response = await sendChatMessage(message)
+            const response = await sendOnboardingChatMessage(message)
 
             if ('error' in response) {
                 console.error(response.error)
@@ -41,7 +35,7 @@ export function Chat({ initialMessages, className}: ChatProps) {
             console.log("response", response)
 
             //@ts-ignore
-            setMessages([...messages, {
+            setDisplayedMessages([...displayedMessages, {
                 content: response.content,
                 //@ts-ignore
                 role: response.role,
@@ -55,14 +49,13 @@ export function Chat({ initialMessages, className}: ChatProps) {
             setIsLoading(false)
         }
     }
-
     return (
         <>
-            <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
+            <div className={'pb-[200px] pt-4 md:pt-10'}>
                 {messages.length ? (
                     <>
-                        <ChatList messages={messages}/>
-                        <ChatScrollAnchor trackVisibility={isLoading}/>
+                        <ChatList messages={displayedMessages}/>
+                        <ChatScrollAnchor/>
                     </>
                 ) : (
                     <EmptyScreen/>
@@ -73,9 +66,11 @@ export function Chat({ initialMessages, className}: ChatProps) {
                 input={input}
                 setInput={setInput}
                 sendMessage={sendMessage}
+
             />
 
 
         </>
     )
+
 }

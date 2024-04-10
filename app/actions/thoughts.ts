@@ -11,7 +11,7 @@ import {embedDocument} from "@/app/actions/embeddings";
 import {Thought} from "@/lib/types";
 import {getEmbeddings} from "@/utils/embeddings";
 
-export async function addThoughtToContext(contextId: number, thoughtContent: string) {
+export async function addThoughtToContext(contextId: number, thoughtContent: string, parentThoughtId?: number) {
     const session = await auth()
 
     if (!session?.user?.id) {
@@ -20,21 +20,44 @@ export async function addThoughtToContext(contextId: number, thoughtContent: str
         }
     }
 
-    const newThought = await prisma.thought.create({
-        data: {
-            content: thoughtContent,
-            uuid: nanoid(),
-            owner: {
-                connect: {
-                    id: session.user.id
-                }
-            },
-            context: {
-                connect: {
-                    id: contextId
-                }
+    console.log("parentThoughtId", parentThoughtId)
+    const thoughtData = parentThoughtId ? {
+        content: thoughtContent,
+        uuid: nanoid(),
+        owner: {
+            connect: {
+                id: session.user.id
+            }
+        },
+        context: {
+            connect: {
+                id: contextId
+            }
+        },
+        parent: {
+            connect: {
+                id: parentThoughtId
             }
         }
+    } : {
+        content: thoughtContent,
+        uuid: nanoid(),
+        owner: {
+            connect: {
+                id: session.user.id
+            }
+        },
+        context: {
+            connect: {
+                id: contextId
+            }
+        }
+    }
+
+    console.log("thoughtData", thoughtData)
+
+    const newThought = await prisma.thought.create({
+        data: thoughtData
     })
 
     try {
@@ -228,4 +251,120 @@ export async function findBestMatchedThoughts(filter: string, userId: string) {
     }
 
     return relatedThoughts
+}
+
+export async function getThoughtsTwitterStyle() {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+        return {
+            thoughts: [],
+            contextId: 0
+        }
+    }
+
+    const thoughts = await prisma.thought.findMany({
+        where: {
+            ownerId: session.user.id,
+            submind: {
+                is: null
+            }
+        },
+        include: {
+            children: true,
+            likes: true
+        },
+        orderBy: {
+            createdAt: 'desc'
+        }
+    })
+
+    const contextId = thoughts.length > 0 ? thoughts[0].contextId : await prisma.context.findFirst({
+        where: {
+            ownerId: session.user.id
+        }
+    }).then(context => context?.id as number)
+
+
+    return {
+        thoughts: thoughts.map((thought) => {
+            console.log("thought", thought)
+            return {
+                id: thought.id,
+                content: thought.content,
+                createdAt: formatDate(thought.createdAt),
+                userId: thought.ownerId,
+                contextId: thought.contextId,
+                uuid: thought.uuid,
+                source: thought.submindId ? "submind" : "user",
+                likes: thought.likes.length,
+                replies: thought.children.length
+
+
+            }
+        }),
+        contextId
+    }
+
+
+}
+
+export async function getThoughtTwitterStyle(thoughtId: number) {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+        return {
+            thoughts: [],
+            contextId: 0
+        }
+    }
+
+    const thought = await prisma.thought.findUnique({
+        where: {
+            id: thoughtId
+        },
+        include: {
+            children: {
+                include: {
+                    children: true,
+                    likes: true
+                }
+            },
+            likes: true
+        }
+    })
+
+    if (!thought) {
+        return {
+            thoughts: [],
+            contextId: 0
+        }
+    }
+
+    return {
+        thoughts: [{
+            id: thought.id,
+            content: thought.content,
+            createdAt: formatDate(thought.createdAt),
+            userId: thought.ownerId,
+            contextId: thought.contextId,
+            uuid: thought.uuid,
+            source: thought.submindId ? "submind" : "user",
+            likes: thought.likes.length,
+            replies: thought.children.length
+        }, ...thought.children.map((child) => {
+            return {
+                id: child.id,
+                content: child.content,
+                createdAt: formatDate(child.createdAt),
+                userId: child.ownerId,
+                contextId: child.contextId,
+                uuid: child.uuid,
+                source: child.submindId ? "submind" :"user",
+                likes: child.likes.length,
+                replies: child.children.length
+            }
+        })],
+        contextId: thought.contextId
+    }
 }

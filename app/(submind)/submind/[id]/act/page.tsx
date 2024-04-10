@@ -20,6 +20,7 @@ export default async function ActPage({params}: ActPageProps) {
 
     const document = await getDocument(submind.documentUUID)
 
+    if (!document || 'error' in document) return null
 
     return (
         <>

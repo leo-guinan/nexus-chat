@@ -42,29 +42,28 @@ model Session {
 }
 
 model User {
-  id               String    @id @default(cuid())
-  createdAt        DateTime  @default(now())
-  email            String    @unique
+  id               String           @id @default(cuid())
+  createdAt        DateTime         @default(now())
+  email            String           @unique
   emailVerified    DateTime?
   name             String?
   stripeCustomerId String?
-
-  role            String           @default("user")
-  thoughts        Thought[]
-  communities     Community[]
-  memberships     Membership[]
-  image           String?
-  accounts        Account[]
-  sessions        Session[]
-  contexts        Context[]
-  tasks           Task[]
-  intents         Intent[]
-  subscriptions   Subscription[]
-  googleCalendars GoogleCalendar[] // Relation to Google Calendar accounts
-  acceptedPolicy  DateTime?
-  subminds        Submind[]
-  questions       Question[]
-
+  role             String           @default("user")
+  onboardingChatUUID String?
+  thoughts         Thought[]
+  communities      Community[]
+  memberships      Membership[]
+  image            String?
+  accounts         Account[]
+  sessions         Session[]
+  contexts         Context[]
+  tasks            Task[]
+  intents          Intent[]
+  subscriptions    Subscription[]
+  googleCalendars  GoogleCalendar[] // Relation to Google Calendar accounts
+  acceptedPolicy   DateTime?
+  subminds         Submind[]
+  questions        Question[]
 }
 
 model Subscription {
@@ -121,18 +120,32 @@ model Context {
 }
 
 model Thought {
+  id              Int       @id @default(autoincrement())
+  createdAt       DateTime  @default(now())
+  content         String
+  owner           User      @relation(fields: [ownerId], references: [id])
+  ownerId         String
+  context         Context   @relation(fields: [contextId], references: [id])
+  contextId       Int
+  intents         Intent[]
+  uuid            String?
+  children        Thought[] @relation("ParentThoughts")
+  parent          Thought?  @relation("ParentThoughts", fields: [parentId], references: [id])
+  parentId        Int?
+  submind         Submind?  @relation(name: "SubmindInternalThoughts", fields: [submindId], references: [id])
+  submindId       Int?
+  relatedSubminds Submind[] @relation(name: "SubmindRelatedThoughts")
+  pendingSubminds Submind[] @relation(name: "SubmindPendingThoughts")
+  likes           Like[]
+}
+
+model Like {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  content   String
-  owner     User     @relation(fields: [ownerId], references: [id])
-  ownerId   String
-  context   Context  @relation(fields: [contextId], references: [id])
-  contextId Int
-  intents   Intent[]
-  uuid      String?
-  submind   Submind? @relation(name: "SubmindInternalThoughts",fields: [submindId], references: [id])
-  submindId Int?
-  relatedSubminds Submind[] @relation(name: "SubmindRelatedThoughts")
+  thought   Thought  @relation(fields: [thoughtId], references: [id])
+  thoughtId Int
+  submind   Submind  @relation(fields: [submindId], references: [id])
+  submindId Int
 }
 
 model Tool {
@@ -234,7 +247,7 @@ model GoogleCalendar {
 }
 
 model CalendarEvent {
-  id               Int            @id @default(autoincrement())
+  id               Int             @id @default(autoincrement())
   googleCalendarId Int? // Foreign key reference to the GoogleCalendar model
   googleEventId    String // Unique ID of the event from Google Calendar
   summary          String?
@@ -275,52 +288,57 @@ model Product {
 }
 
 model Submind {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String
-  description String?
-  owner     User     @relation(fields: [ownerId], references: [id])
-  ownerId   String
-  thoughts  Thought[] @relation("SubmindInternalThoughts")
-  relatedThoughts Thought[] @relation("SubmindRelatedThoughts")
-  context Context @relation(fields: [contextId], references: [id])
-  contextId Int
-  questions Question[]
-  documentUUID String @unique
-  status SubmindStatus @default(READY)
-  lastRun DateTime?
-  mindUUID String?
-  answers Answer[]
+  id              Int           @id @default(autoincrement())
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  name            String
+  description     String?
+  owner           User          @relation(fields: [ownerId], references: [id])
+  ownerId         String
+  thoughts        Thought[]     @relation("SubmindInternalThoughts")
+  relatedThoughts Thought[]     @relation("SubmindRelatedThoughts")
+  pendingThoughts Thought[]     @relation("SubmindPendingThoughts")
+  context         Context       @relation(fields: [contextId], references: [id])
+  webhookUrl      String?
+  contextId       Int
+  questions       Question[]
+  documentUUID    String        @unique
+  status          SubmindStatus @default(READY)
+  lastRun         DateTime?
+  mindUUID        String?
+  founderUUID     String?
+  valuesUUID      String?
+  answers         Answer[]
+  likes           Like[]
 }
 
 model Question {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  content   String
-  owner     User      @relation(fields: [ownerId], references: [id])
-  ownerId   String
-  submind   Submind?   @relation(fields: [submindId], references: [id])
-  submindId Int?
-  context   Context   @relation(fields: [contextId], references: [id])
-  contextId Int
-  forHuman Boolean @default(false)
-  forInternet Boolean @default(false)
-  answers  Answer[]
-
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  content     String
+  owner       User     @relation(fields: [ownerId], references: [id])
+  ownerId     String
+  submind     Submind? @relation(fields: [submindId], references: [id])
+  submindId   Int?
+  context     Context  @relation(fields: [contextId], references: [id])
+  contextId   Int
+  forHuman    Boolean  @default(false)
+  forInternet Boolean  @default(false)
+  answers     Answer[]
 }
 
 model Answer {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  content   String?
-  question  Question  @relation(fields: [questionId], references: [id])
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  content    String?
+  question   Question @relation(fields: [questionId], references: [id])
   questionId Int
-  source    String?
-  requestId String?
-  submind   Submind?   @relation(fields: [submindId], references: [id])
-  submindId Int?
-
+  source     String?
+  requestId  String?
+  submind    Submind? @relation(fields: [submindId], references: [id])
+  submindId  Int?
 }
+
+

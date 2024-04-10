@@ -15,38 +15,12 @@ export async function getDocument(documentId: string) {
         }
     }
 
-    const getDocumentTool = await prisma.tool.findUnique({
-        where: {
-            url_slug: {
-                slug: "documents",
-                url: `${process.env.DOCUMENT_API_URL}/get/`
-            }
-
-        }
-    })
-
-    console.log("getDocumentTool", getDocumentTool)
-
-    if (!getDocumentTool) {
-        return {
-            error: "No tool matching that url"
-        }
-    }
-
-    const status = await fetch(getDocumentTool?.url as string, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Api-Key ${process.env.TASK_API_KEY}`
-        },
-        body: JSON.stringify({
-            user_id: session.user.id,
-            uuid: documentId
-        })
-    })
-    const jsonResults = await status.json()
-    console.log("status", jsonResults)
-    return jsonResults
+    const client = await MongoClient.connect(process.env.MONGO_URL as string);
+    const db = client.db('myaicofounder');
+    const collection = db.collection('documents');
+    const document = await collection.findOne({uuid: documentId, userId: session.user.id});
+    await client.close();
+    return document;
 
 }
 
@@ -167,4 +141,35 @@ export async function generateDocument(thoughts: Thought[], intent: string) {
 
     return jsonResults
 
+}
+//  historical_uuid = str(uuid.uuid4())
+//     previous_doc = db.documents.find_one({"uuid": document_uuid})
+//
+//     db.document_history.insert_one({
+//         "uuid": historical_uuid,
+//         "content": previous_doc["content"],
+//         "createdAt": previous_doc["createdAt"],
+//         "documentUUID": previous_doc["uuid"]
+//     })
+//     db.documents.update_one({"uuid": document_uuid}, {"$set": {"content": content, "previousVersion": historical_uuid, "updatedAt": datetime.now()}})
+
+export async function updateDocument(documentUUID: string, content: string) {
+    const client = await MongoClient.connect(process.env.MONGO_URL as string);
+    const db = client.db('myaicofounder');
+    const collection = db.collection('documents');
+    const existingDocument = await getDocument(documentUUID)
+    if (!existingDocument || 'error' in existingDocument) {
+        throw new Error('Document not found')
+    }
+
+    const historicalCollection = db.collection('document_history');
+    const historicalUUID = nanoid();
+    await historicalCollection.insertOne({
+        uuid: historicalUUID,
+        content: existingDocument.content,
+        createdAt: existingDocument.updatedAt ?? new Date(),
+        documentUUID
+
+    })
+    await collection.updateOne({uuid: documentUUID}, {$set: {content, updatedAt: new Date(), previousVersion: historicalUUID}});
 }

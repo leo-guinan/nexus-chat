@@ -34,6 +34,18 @@
         --ring: 240 5% 64.9%;
 
         --radius: 0.5rem;
+        .tiptap {
+            @apply flex h-full w-full p-4
+        }
+
+        .tiptap p.is-editor-empty:first-child::before {
+            @apply placeholder-gray-400 dark:placeholder-gray-200;
+            color: #adb5bd;
+            content: attr(data-placeholder);
+            float: left;
+            height: 0;
+            pointer-events: none;
+        }
     }
 
     .dark {
@@ -88,4 +100,6 @@
         @apply bg-background text-foreground;
     }
 }
+
+
 

@@ -2,8 +2,7 @@ import {type Metadata} from 'next'
 import {redirect} from 'next/navigation'
 
 import {auth} from '@/auth'
-import {Chat} from '@/components/chat'
-import {getChat} from "@/app/actions/chats";
+
 import {getDocument} from "@/app/actions/documents";
 import Document from "@/components/documents/document";
 import GenerateTasks from "@/components/tasks/generate-tasks";
@@ -41,7 +40,9 @@ export default async function DocumentPage({params}: DocumentPageProps) {
     console.log("looking up document")
 
     const doc = await getDocument(params.id)
-
+    if (!doc || 'error' in doc) {
+        return null
+    }
 
     return (
         <>

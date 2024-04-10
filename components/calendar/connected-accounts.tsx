@@ -19,7 +19,7 @@ export default function ConnectedAccounts({calendars}: ConnectedAccountProps) {
     const [displayedCalendars, setDisplayedCalendars] = useState(calendars)
    const connectCalendar = async () => {
         // Redirect to the backend endpoint to start the OAuth process
-        window.location.href = '/api/auth/google/start';
+        window.location.href = '/api/integrations/auth/google/start';
     };
 
     const disconnectCalendar = async (calendarId: number) => {

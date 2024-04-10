@@ -4,7 +4,7 @@ interface ContextLayoutProps {
   children: React.ReactNode
 }
 
-export default async function ToolLayout({ children }: ContextLayoutProps) {
+export default async function ContextLayout({ children }: ContextLayoutProps) {
   return (
     <div className="relative flex h-[calc(100vh_-_theme(spacing.16))] overflow-hidden">
       <SidebarDesktop />

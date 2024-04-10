@@ -92,6 +92,12 @@ dependencies:
   '@stripe/stripe-js':
     specifier: ^3.0.6
     version: 3.0.6
+  '@tiptap/extension-placeholder':
+    specifier: ^2.2.6
+    version: 2.2.6(@tiptap/core@2.2.4)(@tiptap/pm@2.2.4)
+  '@tiptap/extension-typography':
+    specifier: ^2.2.6
+    version: 2.2.6(@tiptap/core@2.2.4)
   '@tiptap/pm':
     specifier: ^2.2.4
     version: 2.2.4
@@ -2169,6 +2175,16 @@ packages:
       '@tiptap/core': 2.2.4(@tiptap/pm@2.2.4)
     dev: false
 
+  /@tiptap/extension-placeholder@2.2.6(@tiptap/core@2.2.4)(@tiptap/pm@2.2.4):
+    resolution: {integrity: sha512-eHPadx48gneDD8bTZeRnG4hOvRvctBPY5JlA03QQIoarrbmqsyv3zZSW8smBsRai9kwbXLhytdEFGruTKV9PjQ==}
+    peerDependencies:
+      '@tiptap/core': ^2.0.0
+      '@tiptap/pm': ^2.0.0
+    dependencies:
+      '@tiptap/core': 2.2.4(@tiptap/pm@2.2.4)
+      '@tiptap/pm': 2.2.4
+    dev: false
+
   /@tiptap/extension-strike@2.2.4(@tiptap/core@2.2.4):
     resolution: {integrity: sha512-/a2EwQgA+PpG17V2tVRspcrIY0SN3blwcgM7lxdW4aucGkqSKnf7+91dkhQEwCZ//o8kv9mBCyRoCUcGy6S5Xg==}
     peerDependencies:
@@ -2179,6 +2195,14 @@ packages:
 
   /@tiptap/extension-text@2.2.4(@tiptap/core@2.2.4):
     resolution: {integrity: sha512-NlKHMPnRJXB+0AGtDlU0P2Pg+SdesA2lMMd7JzDUgJgL7pX2jOb8eUqSeOjFKuSzFSqYfH6C3o6mQiNhuQMv+g==}
+    peerDependencies:
+      '@tiptap/core': ^2.0.0
+    dependencies:
+      '@tiptap/core': 2.2.4(@tiptap/pm@2.2.4)
+    dev: false
+
+  /@tiptap/extension-typography@2.2.6(@tiptap/core@2.2.4):
+    resolution: {integrity: sha512-S8rvwSLq6IW1pEo/1Gcyez2tnXvUbwFBsAGNKPzcX/0HvlgXYWdE+qcjT3yoY/gAHRdvqfAP1Cd4Up7O3f1//A==}
     peerDependencies:
       '@tiptap/core': ^2.0.0
     dependencies:

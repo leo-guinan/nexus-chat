@@ -52,3 +52,15 @@ export type Tool = {
     url: string
     pattern?: string | null
 }
+
+export type TwitterThoughtType = {
+    id: number
+    content: string
+    createdAt: string
+    userId: string
+    contextId: number
+    uuid: string | null
+    source: string
+    likes: number
+    replies: number
+}

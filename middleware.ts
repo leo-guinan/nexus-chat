@@ -24,6 +24,15 @@ export default auth((req) => {
         }
         return NextResponse.rewrite(new URL('/data', req.nextUrl.origin))
     }
+
+    // redirect user to onboarding if they haven't been there yet
+    if (!(req.auth.user as User).onboardingChatUUID) {
+        // make sure we don't end up in an infinite loop
+        if (req.url.split('?')[0].endsWith('/onboarding')) {
+            return;
+        }
+        return NextResponse.rewrite(new URL('/onboarding', req.nextUrl.origin))
+    }
     return NextResponse.next();
 })
 

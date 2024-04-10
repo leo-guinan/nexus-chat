@@ -26,6 +26,7 @@ interface AnswerList {
 export default function QuestionList({questions}: QuestionListProps) {
 
     const [answers, setAnswers] = useState<AnswerList>({})
+    const [displayedQuestions, setDisplayedQuestions] = useState(questions);
     useEffect(() => {
         const map = questions.reduce((acc, question) => {
             acc[question.id] = {
@@ -49,13 +50,16 @@ export default function QuestionList({questions}: QuestionListProps) {
         await answerQuestion(questionId, answers[questionId].answer);
         // remove the question with the questionId from the answers state
         const {[questionId]: _, ...rest} = answers;
+        setAnswers(rest);
+        // remove the question with the questionId from the displayedQuestions state
+        setDisplayedQuestions(displayedQuestions.filter(question => question.id !== questionId));
 
 
     }
 
     return (
         <div className="w-full max-w-2xl space-y-6">
-            {questions && questions.map((question) => (
+            {displayedQuestions && displayedQuestions.map((question) => (
                 <div key={question.id} className="space-y-1">
                     <h3 className="text-lg leading-none font-semibold">{question.content}</h3>
                     <Input className="max-w-sm w-full" placeholder="Enter your answer" type="text"
