@@ -137,6 +137,7 @@ model Thought {
   relatedSubminds Submind[] @relation(name: "SubmindRelatedThoughts")
   pendingSubminds Submind[] @relation(name: "SubmindPendingThoughts")
   likes           Like[]
+  research        Research[]
 }
 
 model Like {
@@ -317,6 +318,7 @@ model Submind {
   answers         Answer[]
   likes           Like[]
   schedule        SubmindSchedule @default(DAILY)
+  research        Research[]
 }
 
 model Question {
@@ -333,6 +335,7 @@ model Question {
   forHuman    Boolean  @default(false)
   forInternet Boolean  @default(false)
   answers     Answer[]
+  research    Research[]
 }
 
 model Answer {
@@ -346,6 +349,25 @@ model Answer {
   requestId  String?
   submind    Submind? @relation(fields: [submindId], references: [id])
   submindId  Int?
+  research   Research? @relation(fields: [researchId], references: [id])
+  researchId Int?
 }
 
+
+
+model Research {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  description String?
+  submind    Submind  @relation(fields: [submindId], references: [id])
+  submindId  Int
+  respondTo  Thought  @relation(fields: [respondToId], references: [id])
+  respondToId Int
+  questions   Question[]
+  answers     Answer[]
+  response    String?
+  completed   Boolean  @default(false)
+}
 
