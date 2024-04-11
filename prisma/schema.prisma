@@ -286,6 +286,12 @@ model Product {
   stripeProductId String?
   prices          Price[]
 }
+enum SubmindSchedule {
+  DAILY
+  EIGHT_HOUR
+  FOUR_HOUR
+  INSTANT
+}
 
 model Submind {
   id              Int           @id @default(autoincrement())
@@ -310,6 +316,7 @@ model Submind {
   valuesUUID      String?
   answers         Answer[]
   likes           Like[]
+  schedule        SubmindSchedule @default(DAILY)
 }
 
 model Question {
