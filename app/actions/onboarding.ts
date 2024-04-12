@@ -10,7 +10,7 @@ import {ConversationChain} from "langchain/chains";
 import {auth} from "@/auth";
 import OpenAI from "openai";
 import {ChatOpenAI} from "@langchain/openai";
-import {Submind} from "@prisma/client/edge";
+import {Context, Submind} from "@prisma/client/edge";
 import {createDocument, getDocument, updateDocument} from "@/app/actions/documents";
 
 
@@ -96,12 +96,26 @@ export async function getOnboardingChat() {
         const values = await createDocument(userId, "This is placeholder content")
         const founder = await createDocument(userId, "This is placeholder content")
 
+        let context: Context
+
+        if (user.contexts.length === 0) {
+            context = await prisma.context.create({
+                data: {
+                    ownerId: userId,
+                    name: "Default"
+                }
+            })
+        } else {
+            context = user.contexts[0]
+        }
+
+
         await prisma.submind.create({
             data: {
                 ownerId: userId,
                 name: "Submind",
                 description: "Your powerful submind",
-                contextId: user.contexts[0].id,
+                contextId: context.id,
                 documentUUID: document.documentId,
                 founderUUID: founder.documentId,
                 valuesUUID: values.documentId,
