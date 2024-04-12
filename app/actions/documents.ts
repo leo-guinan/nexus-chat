@@ -19,6 +19,11 @@ export async function getDocument(documentId: string) {
     const db = client.db('myaicofounder');
     const collection = db.collection('documents');
     const document = await collection.findOne({uuid: documentId, userId: session.user.id});
+    if (!document) {
+        return {
+            error: "Document not found"
+        }
+    }
     await client.close();
     return document;
 

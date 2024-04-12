@@ -4,7 +4,11 @@ import { Separator } from '@/components/ui/separator'
 import { ChatMessage } from '@/components/chat-message'
 
 export interface ChatList {
-  messages: Message[]
+  messages: {
+    content: string
+    role: string
+    id: string
+  }[]
 }
 
 export function ChatList({ messages }: ChatList) {

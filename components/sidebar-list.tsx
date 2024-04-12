@@ -34,6 +34,16 @@ export async function SidebarList({userId: _, isAdmin}: SidebarListProps) {
                 >
                     Thoughts
                 </Link>
+
+                <Link
+                    href={`/chat`}
+                    className={cn(
+                        buttonVariants({variant: 'ghost'}),
+                        'group w-full px-8 transition-colors hover:bg-zinc-200/40 dark:hover:bg-zinc-300/10',
+                    )}
+                >
+                    New Chat
+                </Link>
                 {/*<Link*/}
                 {/*    href={`/tasks`}*/}
                 {/*    className={cn(*/}

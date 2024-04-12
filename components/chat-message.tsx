@@ -12,7 +12,11 @@ import { IconOpenAI, IconUser } from '@/components/ui/icons'
 import { ChatMessageActions } from '@/components/chat-message-actions'
 
 export interface ChatMessageProps {
-  message: Message
+  message: {
+    content: string
+    role: string
+    id: string
+  }
 }
 
 export function ChatMessage({ message, ...props }: ChatMessageProps) {

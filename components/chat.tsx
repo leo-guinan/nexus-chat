@@ -1,25 +1,39 @@
 'use client'
 
-import {type Message} from 'ai/react'
 
 import {cn} from '@/lib/utils'
 import {ChatList} from '@/components/chat-list'
 import {ChatPanel} from '@/components/chat-panel'
 import {EmptyScreen} from '@/components/empty-screen'
 import {ChatScrollAnchor} from '@/components/chat-scroll-anchor'
-import {ComponentProps, useState} from "react";
+import {ComponentProps, useEffect, useState} from "react";
 import {sendChatMessage} from "@/app/actions/chats";
+import {usePathname, useRouter} from "next/navigation";
 
 export interface ChatProps extends ComponentProps<'div'> {
-    initialMessages: Message[]
-    id?: string
+    initialMessages: {
+        content: string
+        role: string
+        id: string
+    }[]
+    sessionId: string
     userId?: string
 }
 
-export function Chat({ initialMessages, className}: ChatProps) {
+export function Chat({sessionId, initialMessages, className}: ChatProps) {
     const [messages, setMessages] = useState(initialMessages)
     const [input, setInput] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+
+    const router = useRouter()
+    const pathname = usePathname()
+
+    useEffect(() => {
+        // if session id not in the url, add it
+        if (sessionId && !pathname.includes(sessionId)) {
+            router.push(`/chat/${sessionId}`, undefined)
+        }
+    })
 
     const sendMessage = async (message: { content: string, role: "user" }) => {
         setIsLoading(true)
@@ -28,11 +42,10 @@ export function Chat({ initialMessages, className}: ChatProps) {
             setMessages([...messages, {
                 content: message.content,
                 role: message.role,
-                createdAt: new Date(),
                 id: "temp"
             }])
 
-            const response = await sendChatMessage(message)
+            const response = await sendChatMessage(sessionId, message)
 
             if ('error' in response) {
                 console.error(response.error)
@@ -40,15 +53,18 @@ export function Chat({ initialMessages, className}: ChatProps) {
             }
             console.log("response", response)
 
-            //@ts-ignore
-            setMessages([...messages, {
-                content: response.content,
-                //@ts-ignore
-                role: response.role,
-                createdAt: new Date(),
-                id: response.id
+            setMessages([...messages,
+                {
+                    content: message.content,
+                    role: message.role,
+                    id: "temp"
+                },
+                {
+                    content: response.content,
+                    role: response.role,
+                    id: response.id
 
-            }])
+                }])
         } catch (e) {
             console.error(e)
         } finally {

@@ -131,6 +131,7 @@ model Thought {
   contextId       Int
   intents         Intent[]
   uuid            String?
+  chatSessionId   String?
   children        Thought[]  @relation("ParentThoughts")
   parent          Thought?   @relation("ParentThoughts", fields: [parentId], references: [id])
   parentId        Int?
