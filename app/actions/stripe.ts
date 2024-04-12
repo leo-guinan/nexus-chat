@@ -12,7 +12,8 @@ type CheckoutResponse = {
 };
 
 export async function createCheckoutSession(
-    annual: boolean
+    annual: boolean,
+    tier: string
 ): Promise<CheckoutResponse> {
 
     let customer: string;
@@ -24,7 +25,9 @@ export async function createCheckoutSession(
         console.error(err);
         throw new Error('Unable to access customer record.');
     }
-    const where = annual ? {where: {interval: "annual"}} :   {where: {interval: "monthly"}}
+    const product = await prisma.product.findFirst({where: {name: tier}})
+    if (!product) throw new Error("Invalid product")
+    const where = annual ? {where: {interval: "annual", productId: product.id}} :   {where: {interval: "monthly", productId: product.id}}
     const price = await prisma.price.findFirst(where)
     if (!price || !price.stripePriceId) throw new Error("Invalid price")
     //

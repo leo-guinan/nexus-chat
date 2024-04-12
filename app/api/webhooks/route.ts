@@ -4,7 +4,7 @@ import {NextResponse} from "next/server";
 
 import {stripe} from "@/lib/stripe";
 import {prisma} from "@/lib/utils";
-import {Price, Subscription} from "@prisma/client/edge";
+import {Price, SubmindSchedule, Subscription} from "@prisma/client/edge";
 
 export async function POST(req: Request) {
     let event: Stripe.Event;
@@ -52,6 +52,13 @@ export async function POST(req: Request) {
                     subscription = await prisma.subscription.findFirst({
                         where: {
                             stripeSubscriptionId: data.subscription as string
+                        },
+                        include: {
+                            price: {
+                                include: {
+                                    product: true
+                                }
+                            }
                         }
                     })
 
@@ -67,6 +74,39 @@ export async function POST(req: Request) {
                             active: true
                         }
                     })
+
+                    let schedule: SubmindSchedule;
+                    //@ts-ignore
+                    switch (subscription.price.product.name) {
+                        case "premium":
+                            schedule = SubmindSchedule.EIGHT_HOUR
+                            break;
+                        case "pro":
+                            schedule = SubmindSchedule.FOUR_HOUR
+                            break;
+                        case "extreme":
+                            schedule = SubmindSchedule.INSTANT
+                            break;
+                        default:
+                            schedule = SubmindSchedule.DAILY
+                            break;
+                    }
+
+                    const subminds = await prisma.submind.findMany({
+                            where: {
+                                ownerId: subscription.userId
+                            }
+                        });
+                        await Promise.all(subminds.map(submind => {
+                            return prisma.submind.update({
+                                where: {
+                                    id: submind.id
+                                },
+                                data: {
+                                    schedule
+                                }
+                            })
+                        }));
 
 
                     console.log(`💰 CheckoutSession status: ${data.payment_status}`);
@@ -88,6 +128,8 @@ export async function POST(req: Request) {
                             stripeCustomerId: data.customer as string
                         }
                     })
+                    // if user for some reason has credit and adds subscription but doesn't need to pay, this can happen
+                    const isActive = data.status === "active"
 
                     price = await prisma.price.findFirst({
                         where: {
@@ -102,7 +144,8 @@ export async function POST(req: Request) {
                     subscription = await prisma.subscription.create({
                         data: {
                             stripeSubscriptionId: data.id,
-                            active: false,
+                            active: isActive,
+                            validUntil: data.current_period_end ? new Date(data.current_period_end * 1000) : new Date(),
                             price: {
                                 connect: {
                                     id: price.id
@@ -150,6 +193,24 @@ export async function POST(req: Request) {
                             }
                         }
                     })
+
+                    if (data.status !== "active") {
+                        const subminds = await prisma.submind.findMany({
+                            where: {
+                                ownerId: subscription.userId
+                            }
+                        });
+                        await Promise.all(subminds.map(submind => {
+                            return prisma.submind.update({
+                                where: {
+                                    id: submind.id
+                                },
+                                data: {
+                                    schedule: SubmindSchedule.DAILY
+                                }
+                            })
+                        }));
+                    }
 
                     console.log(data)
                     console.log(`🔔 Subscription updated: ${data.id}`);

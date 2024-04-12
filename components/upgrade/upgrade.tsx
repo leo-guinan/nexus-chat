@@ -4,28 +4,72 @@
  * @see https://v0.dev/t/sHTQ0fGZ1L6
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-import type Stripe from "stripe";
 import getStripe from "@/utils/get-stripe";
-import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card"
 import {Button} from "@/components/ui/button"
 
 import {createCheckoutSession} from "@/app/actions/stripe";
 import {useEffect, useState} from "react";
-import {Switch} from "@headlessui/react";
 import {cn} from "@/lib/utils";
 import {useRouter} from "next/navigation";
+import {CheckIcon} from "@heroicons/react/24/outline";
 
 interface CheckoutFormProps {
     premium: boolean
 }
 
+const tiers = [
+
+    {
+        name: 'Premium',
+        id: 'premium',
+        href: '#',
+        priceMonthly: '$30',
+        description: 'Get responses every 8 hours',
+        features: ['Everything in Free', 'Get responses every 8 hours', 'More powerful tools available', 'Ideal for people who want to get results by the end of the business day.'],
+        mostPopular: false,
+    },
+    {
+        name: 'Pro',
+        id: 'pro',
+        href: '#',
+        priceMonthly: '$60',
+        description: 'Get responses every 4 hours',
+        features: [
+            'Everything in Premium',
+            'Get responses every 4 hours',
+            'Request tools',
+            'Ideal for people who want to move faster and have results mid-day and end of day.',
+        ],
+        mostPopular: true,
+    },
+    {
+        name: 'Extreme',
+        id: 'extreme',
+        href: '#',
+        priceMonthly: '$150',
+        description: 'Get responses instantly',
+        features: [
+            'Everything in Pro',
+            'Custom tools available to your submind',
+            'Your submind responds as quickly as it can come up with answers/research/results',
+            'Ideal for people who want to use this as their command center for the whole day.'
+        ],
+        mostPopular: false,
+    },
+]
+
+
 export default function Upgrade({premium}: CheckoutFormProps) {
     const [enabled, setEnabled] = useState(false);
     const router = useRouter();
 
-    const formAction = async (): Promise<void> => {
+    const handleCheckout = async (tier: string): Promise<void> => {
+        if (tier === 'free') {
+            return;
+        }
         const {errorRedirect, sessionId} = await createCheckoutSession(
-            enabled
+            enabled,
+            tier
         );
 
         // if (errorRedirect) {
@@ -53,80 +97,92 @@ export default function Upgrade({premium}: CheckoutFormProps) {
     };
 
     useEffect(() => {
-        if(premium) {
+        if (premium) {
             router.push("/")
         }
-    },  )
+    },)
 
     if (premium) {
         return null
     }
 
     return (
-        <Card className="w-full max-w-sm mx-auto">
-            <CardHeader className="p-4 bg-gray-50 dark:bg-gray-800">
-                <Switch.Group as="div" className="flex items-center flex-row w-full ">
-                    <Switch
-                        checked={enabled}
-                        onChange={setEnabled}
-                        className={cn(
-                            enabled ? 'bg-indigo-600' : 'bg-gray-200',
-                            'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2'
-                        )}
-                    >
-                            <span
-                                aria-hidden="true"
-                                className={cn(
-                                    enabled ? 'translate-x-5' : 'translate-x-0',
-                                    'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out'
-                                )}
-                            />
-                    </Switch>
-                    <Switch.Label as="span" className="ml-3 text-sm">
-                        <span className="font-medium text-gray-900 dark:text-gray-400">Annual billing</span>{' '}
-                        <span className="text-gray-500">(2 months free)</span>
-                    </Switch.Label>
-                </Switch.Group>
-
-            </CardHeader>
-            <CardContent className="p-4">
-                <div className="flex items-center space-x-4">
-
-                    <h3 className="text-lg font-bold flex flex-col">Premium</h3>
-                </div>
-                <p className="text-sm leading-none text-gray-500 dark:text-gray-400">Includes all features in the Free
-                    plan</p>
-                <div className="grid gap-1">
-                    <h4 className="text-base font-bold">Integrations</h4>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                        All integrations are included, with new ones being added regularly.
+        <div className="bg-white py-24 sm:py-32">
+            <div className="mx-auto max-w-7xl px-6 lg:px-8">
+                <div className="mx-auto max-w-4xl text-center">
+                    <h2 className="text-base font-semibold leading-7 text-indigo-600">Pricing</h2>
+                    <p className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+                        Pick the plan that responds as quickly as you need.
                     </p>
                 </div>
-                <div className="grid gap-1">
-                    <h4 className="text-base font-bold">Chat</h4>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Unlock a powerful chat feature that pulls in related thoughts during the conversation to know
-                        exactly what you are talking about
-                    </p>
+                <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-gray-600">
+                    How quickly do you want your submind to respond? What tools do you want your submind to have
+                    access to? Choose the plan that fits your needs.
+                </p>
+                <div
+                    className="isolate mx-auto mt-16 grid max-w-md grid-cols-1 gap-y-8 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+                    {tiers.map((tier, tierIdx) => (
+                        <div
+                            key={tier.id}
+                            className={cn(
+                                tier.mostPopular ? 'lg:z-10 lg:rounded-b-none' : 'lg:mt-8',
+                                tierIdx === 0 ? 'lg:rounded-r-none' : '',
+                                tierIdx === tiers.length - 1 ? 'lg:rounded-l-none' : '',
+                                'flex flex-col justify-between rounded-3xl bg-white p-8 ring-1 ring-gray-200 xl:p-10'
+                            )}
+                        >
+                            <div>
+                                <div className="flex items-center justify-between gap-x-4">
+                                    <h3
+                                        id={tier.id}
+                                        className={cn(
+                                            tier.mostPopular ? 'text-indigo-600' : 'text-gray-900',
+                                            'text-lg font-semibold leading-8'
+                                        )}
+                                    >
+                                        {tier.name}
+                                    </h3>
+                                    {tier.mostPopular ? (
+                                        <p className="rounded-full bg-indigo-600/10 px-2.5 py-1 text-xs font-semibold leading-5 text-indigo-600">
+                                            Most popular
+                                        </p>
+                                    ) : null}
+                                </div>
+                                <p className="mt-4 text-sm leading-6 text-gray-600">{tier.description}</p>
+                                <p className="mt-6 flex items-baseline gap-x-1">
+                                    <span
+                                        className="text-4xl font-bold tracking-tight text-gray-900">{tier.priceMonthly}</span>
+                                    <span className="text-sm font-semibold leading-6 text-gray-600">/month</span>
+                                </p>
+                                <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-gray-600">
+                                    {tier.features.map((feature) => (
+                                        <li key={feature} className="flex gap-x-3">
+                                            <CheckIcon className="h-6 w-5 flex-none text-indigo-600"
+                                                       aria-hidden="true"/>
+                                            {feature}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <Button
+                                type="button"
+                                variant={tier.mostPopular ? 'default' : 'secondary'}
+                                aria-describedby={tier.id}
+                                className="py-2 mt-4"
+                                // className={cn(
+                                //     tier.mostPopular
+                                //         ? 'bg-indigo-600 text-white shadow-sm hover:bg-indigo-500'
+                                //         : 'text-indigo-600 ring-1 ring-inset ring-indigo-200 hover:ring-indigo-300',
+                                //     'mt-8 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+                                // )}
+                                onClick={() => handleCheckout(tier.id)}
+                            >
+                                Buy plan
+                            </Button>
+                        </div>
+                    ))}
                 </div>
-                <div className="grid gap-1">
-                    <h4 className="text-base font-bold">Bonus Products</h4>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Get early access to new products. The first one coming is Nexus Podcasts, a podcast player meant
-                        to help you capture important thoughts while listening.
-                    </p>
-                </div>
-            </CardContent>
-            <CardFooter className="flex p-4 items-center justify-between gap-4 bg-gray-50 dark:bg-gray-800">
-
-                <form action={formAction}>
-
-                    <div className="text-2xl font-semibold">{enabled ? "$300" : "$30"}</div>
-                    <Button size="sm" variant="default" type="submit">
-                        Upgrade to Premium
-                    </Button>
-                </form>
-            </CardFooter>
-        </Card>
+            </div>
+        </div>
     )
 }

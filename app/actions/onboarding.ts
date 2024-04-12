@@ -81,6 +81,15 @@ export async function getOnboardingChat() {
 
 
     if (user.subminds.length === 0) {
+        await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                // one day of instant access when the user starts onboarding.
+                instantAccessUntil: new Date(new Date().getTime() + 1000 * 60 * 60 * 24)
+            }
+        })
 
         const document = await createDocument(userId, "This is placeholder content")
         const mind = await createDocument(userId, "This is placeholder content")

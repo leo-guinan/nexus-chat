@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Subscription" ADD COLUMN     "validUntil" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
