@@ -82,6 +82,16 @@ export async function SidebarList({userId: _, isAdmin}: SidebarListProps) {
                     Help
                 </Link>
 
+                <Link
+                    href={`/upgrade`}
+                    className={cn(
+                        buttonVariants({variant: 'ghost'}),
+                        'group w-full px-8 transition-colors hover:bg-zinc-200/40 dark:hover:bg-zinc-300/10',
+                    )}
+                >
+                    Upgrade Your Account
+                </Link>
+
                 {isAdmin && (
                     <div>
                         <div className="relative py-4">
