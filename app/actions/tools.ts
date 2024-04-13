@@ -1,9 +1,9 @@
 'use server'
-import { prisma } from "@/lib/utils"
+import {nanoid, prisma} from "@/lib/utils"
 import {auth} from "@/auth";
-import {nanoid} from "@/lib/utils";
 import {Thought, Tool} from "@/lib/types";
 import {matchThought} from "@/utils/openai/match-thought";
+import axios from "axios";
 
 async function doesThoughtMatchPattern(thought: string, pattern: string) {
     return await matchThought(thought, pattern)
@@ -124,6 +124,7 @@ export async function addTool(name: string, description: string, url: string, pa
         status: "Error"
     }
 }
+
 export async function runTool(tool: Tool, thought: Thought, userId: string) {
     if (tool.pattern) {
         console.log("Pattern exists, checking against it")
@@ -131,24 +132,31 @@ export async function runTool(tool: Tool, thought: Thought, userId: string) {
         const matchesPattern = await doesThoughtMatchPattern(thought.content, tool.pattern)
         console.log(`${tool.name} matches pattern: ${matchesPattern}`)
         if (matchesPattern) {
-            await fetch(tool.url, {
-                body: JSON.stringify({
-                    message: thought,
-                    user_id: userId,
-                    model_id: 1,
-                    item_uuid: thought.uuid
-                }),
-                method: "POST"
-            })
+            try {
+                await axios.post(
+                    tool.url,
+                    {
+                        message: thought,
+                        user_id: userId,
+                        model_id: 1,
+                        item_uuid: thought.uuid
+                    },
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    },
+                );
+                return
+            } catch (error) {
+                console.error(error);
+            }
+
+
         }
         return
 
     }
 
-
-    await fetch(tool.url, {
-        body: JSON.stringify({message: thought, user_id: userId}),
-        method: "POST"
-    })
 
 }

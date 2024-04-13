@@ -119,6 +119,9 @@ dependencies:
   ai:
     specifier: ^2.2.31
     version: 2.2.31(react@18.2.0)(solid-js@1.8.11)(svelte@4.2.9)(vue@3.4.15)
+  axios:
+    specifier: ^1.6.8
+    version: 1.6.8
   class-variance-authority:
     specifier: ^0.7.0
     version: 0.7.0
@@ -148,7 +151,7 @@ dependencies:
     version: 134.0.0
   langchain:
     specifier: ^0.1.25
-    version: 0.1.25(@pinecone-database/pinecone@2.0.1)(@vercel/kv@1.0.1)(google-auth-library@9.7.0)(googleapis@134.0.0)(mongodb@6.5.0)
+    version: 0.1.25(@pinecone-database/pinecone@2.0.1)(@vercel/kv@1.0.1)(axios@1.6.8)(google-auth-library@9.7.0)(googleapis@134.0.0)(mongodb@6.5.0)
   lucide-react:
     specifier: ^0.358.0
     version: 0.358.0(react@18.2.0)
@@ -2867,6 +2870,16 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
+  /axios@1.6.8:
+    resolution: {integrity: sha512-v/ZHtJDU39mDpyBoFVkETcd/uNdxrWRrg3bKpOKzXFA6Bvqopts6ALSMU3y6ijYxbw2B+wPrIv46egTzJXCLGQ==}
+    dependencies:
+      follow-redirects: 1.15.6
+      form-data: 4.0.0
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
   /axobject-query@3.2.1:
     resolution: {integrity: sha512-jsyHu61e6N4Vbz/v18DHwWYKK0bSWLqn47eeDSKPB7m8tqMHF9YJ+mhIk2lVteyZrY8tnSj/jHOv4YiTCuCJgg==}
     dependencies:
@@ -3906,6 +3919,16 @@ packages:
       tabbable: 6.2.0
     dev: false
 
+  /follow-redirects@1.15.6:
+    resolution: {integrity: sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dev: false
+
   /for-each@0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
     dependencies:
@@ -4670,7 +4693,7 @@ packages:
     engines: {node: '>=6'}
     dev: false
 
-  /langchain@0.1.25(@pinecone-database/pinecone@2.0.1)(@vercel/kv@1.0.1)(google-auth-library@9.7.0)(googleapis@134.0.0)(mongodb@6.5.0):
+  /langchain@0.1.25(@pinecone-database/pinecone@2.0.1)(@vercel/kv@1.0.1)(axios@1.6.8)(google-auth-library@9.7.0)(googleapis@134.0.0)(mongodb@6.5.0):
     resolution: {integrity: sha512-sfEChvr4H2CklHdSByNBbytwBrFhgtA5kPOnwcBrxuXGg1iOaTzhVxQA0QcNcQucI3hZrsNbZjxGp+Can1ooZQ==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4835,6 +4858,7 @@ packages:
       '@langchain/openai': 0.0.18
       '@pinecone-database/pinecone': 2.0.1
       '@vercel/kv': 1.0.1
+      axios: 1.6.8
       binary-extensions: 2.2.0
       expr-eval: 2.0.2
       google-auth-library: 9.7.0
@@ -6362,6 +6386,10 @@ packages:
       prosemirror-model: 1.19.4
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.8.0
+    dev: false
+
+  /proxy-from-env@1.1.0:
+    resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
     dev: false
 
   /punycode.js@2.3.1:
