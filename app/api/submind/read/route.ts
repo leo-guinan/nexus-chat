@@ -4,9 +4,12 @@ import {prisma} from "@/lib/utils";
 export async function POST(req: Request,
 ) {
     const body = await req.json();
-    const userId = body.userId;
+    const userId = body.user_id;
     console.log("Reading thoughts", body);
-
+    // necessary to prevent adding thought to all subminds
+    if (!userId) {
+        return NextResponse.json({error: "Unauthorized"})
+    }
     const submindsForUser = await prisma.submind.findMany({
         where: {
             ownerId: userId,

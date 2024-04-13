@@ -1,7 +1,7 @@
 'use client'
 
 
-import {cn} from '@/lib/utils'
+import {cn, nanoid} from '@/lib/utils'
 import {ChatList} from '@/components/chat-list'
 import {ChatPanel} from '@/components/chat-panel'
 import {EmptyScreen} from '@/components/empty-screen'
@@ -43,6 +43,11 @@ export function Chat({sessionId, initialMessages, className}: ChatProps) {
                 content: message.content,
                 role: message.role,
                 id: "temp"
+            },
+            {
+                content: '...',
+                role: 'assistant',
+                id: "temp"
             }])
 
             const response = await sendChatMessage(sessionId, message)
@@ -57,7 +62,7 @@ export function Chat({sessionId, initialMessages, className}: ChatProps) {
                 {
                     content: message.content,
                     role: message.role,
-                    id: "temp"
+                    id: nanoid()
                 },
                 {
                     content: response.content,

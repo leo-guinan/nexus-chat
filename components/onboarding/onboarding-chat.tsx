@@ -6,6 +6,7 @@ import {ChatPanel} from "@/components/chat-panel";
 import {useState} from "react";
 import {Message} from "ai";
 import {sendOnboardingChatMessage} from "@/app/actions/onboarding";
+import {nanoid} from "@/lib/utils";
 
 interface OnboardingChatProps {
     messages: Message[]
@@ -24,7 +25,14 @@ export default function OnboardingChat({messages}: OnboardingChatProps) {
                 role: message.role,
                 createdAt: new Date(),
                 id: "temp"
-            }])
+            },
+            {
+                content: "...",
+                role: 'assistant',
+                createdAt: new Date(),
+                id: "temp"
+            }
+            ])
 
             const response = await sendOnboardingChatMessage(message)
 
@@ -35,14 +43,22 @@ export default function OnboardingChat({messages}: OnboardingChatProps) {
             console.log("response", response)
 
             //@ts-ignore
-            setDisplayedMessages([...displayedMessages, {
-                content: response.content,
-                //@ts-ignore
-                role: response.role,
-                createdAt: new Date(),
-                id: response.id
+            setDisplayedMessages([...displayedMessages,
+                {
+                    content: message.content,
+                    //@ts-ignore
+                    role: message.role,
+                    createdAt: new Date(),
+                    id: nanoid()
+                },
+                {
+                    content: response.content,
+                    //@ts-ignore
+                    role: response.role,
+                    createdAt: new Date(),
+                    id: response.id
 
-            }])
+                }])
         } catch (e) {
             console.error(e)
         } finally {
