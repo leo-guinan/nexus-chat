@@ -1,9 +1,9 @@
 import {PrismaClient} from '@prisma/client/edge'
-import GitHub from 'next-auth/providers/github'
 import {PrismaAdapter} from "@auth/prisma-adapter";
 import NextAuth, {type DefaultSession} from "next-auth"
 import GoogleProvider from "next-auth/providers/google";
 import {withAccelerate} from '@prisma/extension-accelerate'
+import Resend from "@auth/core/providers/resend";
 
 declare module 'next-auth' {
     interface Session {
@@ -18,11 +18,14 @@ const prisma = new PrismaClient().$extends(withAccelerate())
 
 export const authOptions = {
     adapter: PrismaAdapter(prisma),
-    providers: [GitHub, GoogleProvider({
+    providers: [Resend({
+        // If your environment variable is named differently than default
+        from: "no-reply@auth.myaicofounder.com"
+    }), GoogleProvider({
         clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET
     })],
-    basePath:'/api/auth',
+    basePath: '/api/auth',
     secret: process.env.AUTH_SECRET,
     callbacks: {
         // @ts-ignore

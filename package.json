@@ -50,6 +50,7 @@
     "@vercel/analytics": "^1.1.2",
     "@vercel/kv": "^1.0.1",
     "@vercel/og": "^0.6.2",
+    "@workos-inc/authkit-nextjs": "^0.4.2",
     "ai": "^2.2.31",
     "axios": "^1.6.8",
     "class-variance-authority": "^0.7.0",

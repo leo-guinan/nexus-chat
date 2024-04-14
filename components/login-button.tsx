@@ -6,9 +6,9 @@ import {cn} from '@/lib/utils'
 import {Button, type ButtonProps} from '@/components/ui/button'
 import {IconGitHub, IconSpinner, IconGoogle} from '@/components/ui/icons'
 import {signIn} from "next-auth/react";
-
+import {EnvelopeIcon} from "@heroicons/react/20/solid";
 interface LoginButtonProps extends ButtonProps {
-    provider: "google" | "github"
+    provider: "google"
     showProviderIcon?: boolean
     text?: string
 }
@@ -22,8 +22,7 @@ export function LoginButton({
                                 ...props
                             }: LoginButtonProps) {
     const icons = {
-        github: <IconGitHub className="mr-2"/>,
-        google: <IconGoogle className="mr-2" />
+        google: <IconGoogle className="mr-2" />,
     }
     const [isLoading, setIsLoading] = React.useState(false)
     return (
