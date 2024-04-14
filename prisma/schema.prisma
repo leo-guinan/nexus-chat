@@ -141,6 +141,7 @@ model Thought {
   pendingSubminds Submind[]  @relation(name: "SubmindPendingThoughts")
   likes           Like[]
   research        Research[]
+  tasks           Task[]
 }
 
 model Like {
@@ -195,6 +196,10 @@ model Task {
   owner        User             @relation(fields: [ownerId], references: [id])
   ownerId      String
   uuid         String           @unique
+  submind      Submind?         @relation(fields: [submindId], references: [id])
+  submindId    Int?
+  thought    Thought?         @relation(fields: [thoughtId], references: [id])
+  thoughtId  Int?
   dependencies TaskDependency[] @relation("dependsOn")
   dependantOn  TaskDependency[] @relation("dependentOn")
   contexts     Context[]
@@ -323,6 +328,7 @@ model Submind {
   likes           Like[]
   schedule        SubmindSchedule @default(DAILY)
   research        Research[]
+  tasks           Task[]
 }
 
 model Question {
