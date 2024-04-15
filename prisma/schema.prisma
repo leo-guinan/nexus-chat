@@ -346,6 +346,7 @@ model Question {
   forInternet Boolean    @default(false)
   answers     Answer[]
   research    Research[]
+  error      String?
 }
 
 model Answer {
