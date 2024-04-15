@@ -24,7 +24,7 @@ export default function TwitterInput({
 
     const handleThought = async (thought: string) => {
         const rememberThought = async (thoughtContent: string) => {
-
+            if(!thoughtContent) return
 
             if (parentThoughtId) {
                 const parentThought = thoughts.find(thought => thought.id === parentThoughtId)

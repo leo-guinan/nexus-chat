@@ -17,6 +17,7 @@ export default function OnboardingChat({messages}: OnboardingChatProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [input, setInput] = useState('')
     const sendMessage = async (message: { content: string, role: "user" }) => {
+        if (!message.content) return
         setIsLoading(true)
         try {
             console.log("Getting response...")
