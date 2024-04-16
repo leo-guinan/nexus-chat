@@ -5,6 +5,10 @@ export async function matchThought(thought: string, pattern: string) {
 
     //thought for future enhancement: make sure to track classification for validation down the line. Can fine tune this
 
+
+    // if pattern is *, then match everything
+    if (pattern === "*") return true
+
     const chatModel = new ChatOpenAI({});
 
     const input = `Here is a thought: ${thought}. Classification to check: ${pattern}.`
