@@ -298,7 +298,8 @@ export async function getThoughtsTwitterStyle() {
                 uuid: thought.uuid,
                 source: thought.submindId ? "submind" : "user",
                 likes: thought.likes.length,
-                replies: thought.children.length
+                replies: thought.children.length,
+                parentId: thought.parentId
 
 
             }
@@ -351,7 +352,8 @@ export async function getThoughtTwitterStyle(thoughtId: number) {
             uuid: thought.uuid,
             source: thought.submindId ? "submind" : "user",
             likes: thought.likes.length,
-            replies: thought.children.length
+            replies: thought.children.length,
+            parentId: thought.parentId
         }, ...thought.children.map((child) => {
             return {
                 id: child.id,
@@ -362,7 +364,8 @@ export async function getThoughtTwitterStyle(thoughtId: number) {
                 uuid: child.uuid,
                 source: child.submindId ? "submind" :"user",
                 likes: child.likes.length,
-                replies: child.children.length
+                replies: child.children.length,
+                parentId: child.parentId
             }
         })],
         contextId: thought.contextId

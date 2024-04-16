@@ -61,6 +61,7 @@ export type TwitterThoughtType = {
     contextId: number
     uuid: string | null
     source: string
+    parentId: number | null
     likes: number
     replies: number
 }

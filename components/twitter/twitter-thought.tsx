@@ -30,6 +30,14 @@ export default function TwitterThought({
                                        }: TwitterThoughtProps) {
     const name = thought.source === "submind" ? "Submind" : user?.name
     const initials = thought.source === "submind" ? "SM" : name?.split(" ").map(word => word[0])
+    const excludeClick = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        e.preventDefault()
+    }
+
+    const stopDrag = (e: React.DragEvent) => {
+        e.preventDefault()
+    }
     return (
         <div className="border rounded-lg p-4 w-full">
             <Link href={`/${thought.id}`}>
@@ -43,10 +51,10 @@ export default function TwitterThought({
                             <h1 className="font-bold">{name}</h1>
                             <span className="text-sm text-gray-500 dark:text-gray-400">1m</span>
                         </div>
-                        <div className="text-base leading-6">
-                            <p>
+                        <div className="text-base leading-6 cursor-text select-all" onClick={excludeClick} onDragStart={stopDrag}>
+                            <pre className="whitespace-pre-wrap font-sans">
                                 {thought.content}
-                            </p>
+                            </pre>
                         </div>
                         <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                             <div className="flex gap-1">

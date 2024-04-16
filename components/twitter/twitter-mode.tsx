@@ -18,6 +18,7 @@ interface TwitterModeProps {
 
 export default function TwitterMode({thoughts, user, contextId, selectedId}: TwitterModeProps) {
     const [displayedThoughts, setDisplayedThoughts] = useState<TwitterThoughtType[]>([])
+    const selected = selectedId ? thoughts.find(thought => thought.id === selectedId) : null
 
     useEffect(() => {
         if (selectedId) {
@@ -40,6 +41,17 @@ export default function TwitterMode({thoughts, user, contextId, selectedId}: Twi
                         <li className="border w-full"><TwitterInput contextId={contextId} thoughts={displayedThoughts}
                                                                     setThoughts={setDisplayedThoughts}
                         /></li>
+                    )}
+                    {selectedId && (
+                        <>
+                        {/*    need a header with a back button and arrow. If the thought has a parent, go back to the parent, otherwise, go to the root*/}
+                            <div className="flex items-center gap-4 p-4 border">
+                                <Link href={selected?.parentId ? `/${selected.parentId}` : `/`}>
+                                    <header className="">{"<-- Back"}</header>
+                                </Link>
+
+                            </div>
+                        </>
                     )}
 
                     {displayedThoughts.map(thought => (
