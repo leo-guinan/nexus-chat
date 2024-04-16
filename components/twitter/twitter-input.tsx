@@ -41,8 +41,8 @@ export default function TwitterInput({
                             uuid: "",
                             source: "human",
                             likes: 0,
-                            replies: 0
-
+                            replies: 0,
+                            parentId: parentThoughtId
                         },
                         ...thoughts.filter(thought => thought.id !== parentThoughtId)
                     ])
@@ -60,7 +60,8 @@ export default function TwitterInput({
                     uuid: "",
                     source: "human",
                     likes: 0,
-                    replies: 0
+                    replies: 0,
+                    parentId: null
 
                 }, ...thoughts])
             }
