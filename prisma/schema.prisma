@@ -65,6 +65,8 @@ model User {
   acceptedPolicy     DateTime?
   subminds           Submind[]
   questions          Question[]
+  preloSubmind       PreloSubmind?    @relation(fields: [preloSubmindId], references: [id])
+  preloSubmindId     Int?
 }
 
 model Subscription {
@@ -198,11 +200,12 @@ model Task {
   uuid         String           @unique
   submind      Submind?         @relation(fields: [submindId], references: [id])
   submindId    Int?
-  thought    Thought?         @relation(fields: [thoughtId], references: [id])
-  thoughtId  Int?
+  thought      Thought?         @relation(fields: [thoughtId], references: [id])
+  thoughtId    Int?
   dependencies TaskDependency[] @relation("dependsOn")
   dependantOn  TaskDependency[] @relation("dependentOn")
   contexts     Context[]
+  submindTasks SubmindTask[]
 }
 
 model TaskDependency {
@@ -329,6 +332,7 @@ model Submind {
   schedule        SubmindSchedule @default(DAILY)
   research        Research[]
   tasks           Task[]
+  submindTasks    SubmindTask[]
 }
 
 model Question {
@@ -346,7 +350,7 @@ model Question {
   forInternet Boolean    @default(false)
   answers     Answer[]
   research    Research[]
-  error      String?
+  error       String?
 }
 
 model Answer {
@@ -378,4 +382,79 @@ model Research {
   answers     Answer[]
   response    String?
   completed   Boolean    @default(false)
+}
+
+model SubmindTask {
+  id                   Int             @id @default(autoincrement())
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  submind              Submind         @relation(fields: [submindId], references: [id])
+  submindId            Int
+  task                 Task            @relation(fields: [taskId], references: [id])
+  taskId               Int
+  canCurrentlyComplete Boolean         @default(false)
+  metrics              SubmindMetric[]
+}
+
+model SubmindMetric {
+  id            Int         @id @default(autoincrement())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  submindTask   SubmindTask @relation(fields: [submindTaskId], references: [id])
+  submindTaskId Int
+  metric        String
+  value         String
+  cadence       String
+}
+
+model ScheduledThought {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  baseThought String
+  schedule    String
+  time        DateTime
+}
+
+model PreloSubmind {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  users     User[]
+  clients   PreloClient[]
+  preloQuestions PreloQuestion[]
+}
+
+model PreloQuestion {
+  id        Int          @id @default(autoincrement())
+  createdAt DateTime     @default(now())
+  updatedAt DateTime?    @updatedAt
+  content   String
+  answer    PreloAnswer?
+  answerId  Int?
+  fastMode  Boolean      @default(false)
+  submind   PreloSubmind @relation(fields: [submindId], references: [id])
+  submindId Int
+}
+
+model PreloAnswer {
+  id         Int           @id @default(autoincrement())
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime?     @updatedAt
+  content    String?
+  requestId  Int
+  question   PreloQuestion @relation(fields: [questionId], references: [id])
+  questionId Int           @unique
+}
+
+
+model PreloClient {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  name      String
+  clientId  Int? //used to link backend model
+  preloSubmind PreloSubmind @relation(fields: [preloSubmindId], references: [id])
+  preloSubmindId Int
+
 }

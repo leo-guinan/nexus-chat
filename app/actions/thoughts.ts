@@ -10,7 +10,7 @@ import {runTool} from "@/app/actions/tools";
 import {embedDocument} from "@/app/actions/embeddings";
 import {Thought} from "@/lib/types";
 import {getEmbeddings} from "@/utils/embeddings";
-
+import {cache} from "react"
 export async function addThoughtToContext(contextId: number, thoughtContent: string, parentThoughtId?: number) {
     const session = await auth()
 
@@ -253,7 +253,7 @@ export async function findBestMatchedThoughts(filter: string, userId: string) {
     return relatedThoughts
 }
 
-export async function getThoughtsTwitterStyle() {
+export const getThoughtsTwitterStyle =cache(async ()=> {
     const session = await auth()
 
     if (!session?.user?.id) {
@@ -308,7 +308,7 @@ export async function getThoughtsTwitterStyle() {
     }
 
 
-}
+})
 
 export async function getThoughtTwitterStyle(thoughtId: number) {
     const session = await auth()

@@ -4,9 +4,10 @@ import {SidebarList} from '@/components/sidebar-list'
 interface ChatHistoryProps {
     userId?: string
     isAdmin: boolean
+    hasPrelo?: boolean
 }
 
-export async function ContextSidebar({userId, isAdmin}: ChatHistoryProps) {
+export async function ContextSidebar({userId, isAdmin, hasPrelo}: ChatHistoryProps) {
     return (
         <div className="flex flex-col h-full">
             {/*<div className="px-2 my-4">*/}
@@ -34,7 +35,7 @@ export async function ContextSidebar({userId, isAdmin}: ChatHistoryProps) {
                 }
             >
                 {/* @ts-ignore */}
-                <SidebarList userId={userId} isAdmin={isAdmin}/>
+                <SidebarList userId={userId} isAdmin={isAdmin} hasPrelo={hasPrelo}/>
             </React.Suspense>
         </div>
     )

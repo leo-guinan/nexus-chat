@@ -24,6 +24,24 @@ export async function isUserAdmin(userId?: string | null) {
     return user.role === 'admin'
 }
 
+export async function userHasPrelo(userId?: string | null) {
+    if (!userId) {
+        return false
+    }
+
+    const user = await prisma.user.findFirst({
+        where: {
+            id: userId
+        }
+    })
+
+    if (!user) {
+        return false
+    }
+
+    return user.preloSubmindId !== null
+}
+
 export async function getStats() {
 
     const previousTotalUsers = await prisma.$queryRaw`

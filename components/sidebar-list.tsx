@@ -7,15 +7,29 @@ import {buttonVariants} from "@/components/ui/button";
 interface SidebarListProps {
     userId?: string
     isAdmin: boolean
+    hasPrelo?: boolean
     children?: React.ReactNode
 }
 
 
-export async function SidebarList({userId: _, isAdmin}: SidebarListProps) {
+export async function SidebarList({userId: _, isAdmin, hasPrelo}: SidebarListProps) {
 
     return (
         <div className="flex flex-1 flex-col overflow-hidden">
             <div className="p-8 text-center">
+                {hasPrelo && (
+                    <Link
+                        href={`/prelo`}
+                        className={cn(
+                            buttonVariants({variant: 'ghost'}),
+                            'group w-full px-8 transition-colors hover:bg-zinc-200/40 dark:hover:bg-zinc-300/10',
+                        )}
+                    >
+                        Prelo
+                    </Link>
+                )}
+
+
                 {/*<Link*/}
                 {/*    href={`/today`}*/}
                 {/*    className={cn(*/}
