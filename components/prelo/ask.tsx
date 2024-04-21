@@ -59,7 +59,7 @@ export default function Ask({questions}: AskProps) {
         <div className="p-4">
             <div className="space-y-1 flex flex-col py-2 border border-gray-800">
                 <div className="">
-                    <RefreshButton onClick={()=>refreshAnswers()}/>
+                    <RefreshButton onClick={() => refreshAnswers()}/>
                 </div>
                 <div className="flex flex-row w-full ml-2 py-2">
                     <Label className="text-sm leading-none w-full" htmlFor="question">Ask a question</Label>
@@ -92,13 +92,18 @@ export default function Ask({questions}: AskProps) {
                         <AccordionItem value="what-is-it">
                             <AccordionTrigger className="text-lg font-medium">{question.content}</AccordionTrigger>
                             <AccordionContent>
+                                <div className="text-base leading-6 cursor-text select-all">
+                            <pre className="whitespace-pre-wrap font-sans">
+                                {question?.answer?.content && (
+                                    question.answer.content
+                                )}
+                                {!question?.answer?.content && (
+                                    "Still waiting on answer..."
+                                )}
+                            </pre>
+                                </div>
                                 <p className="text-gray-500 dark:text-gray-400">
-                                    {question?.answer?.content && (
-                                        question.answer.content
-                                    )}
-                                    {!question?.answer?.content && (
-                                        "Still waiting on answer..."
-                                    )}
+
                                 </p>
                             </AccordionContent>
                         </AccordionItem>
