@@ -30,6 +30,9 @@ export async function getQuestions() {
         },
         include: {
             answer: true
+        },
+        orderBy: {
+            createdAt: 'desc'
         }
     })
     const answersToCheck = []
@@ -69,7 +72,6 @@ export async function getQuestions() {
         }
     }))
 
-    console.log(JSON.stringify(questions, null, 2))
 
     return questions
 }
@@ -135,5 +137,51 @@ export async function answerQuestion(question: string, fastMode: boolean, preloC
 }
 
 
+export async function checkForAnswer(questionId: number) {
+    const question = await prisma.preloQuestion.findUnique({
+        where: {
+            id: questionId
+        },
+        include: {
+            answer: true
+        }
+    })
 
+    if (!question?.answer?.content) {
+        const answerRequest = await fetch(`${process.env.PRELO_API_URL as string}check/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Api-Key ${process.env.PRELO_API_KEY}`
+            },
+            body: JSON.stringify({
+                request_id: question!.answer!.requestId
+            })
+        })
+        const answer = await answerRequest.json()
+        console.log("answer", answer)
+        if ('answer' in answer) {
+            await prisma.preloAnswer.update({
+                where: {
+                    id: question!.answer!.id
+                },
+                data: {
+                    content: answer.answer
+                }
+
+            })
+        }
+    }
+    // make sure to pull the updated version
+    return prisma.preloQuestion.findUnique({
+        where: {
+            id: questionId
+        },
+        include: {
+            answer: true
+        }
+    })
+
+
+}
 

@@ -6,7 +6,7 @@ import React, {useState} from "react";
 import {Checkbox} from "@/components/ui/checkbox";
 import {PreloQuestion, Prisma} from "@prisma/client/edge";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion"
-import {answerQuestion, getQuestions} from "@/app/actions/prelo";
+import {answerQuestion, checkForAnswer, getQuestions} from "@/app/actions/prelo";
 import {Label} from "@/components/ui/label";
 import RefreshButton from "@/components/refresh-button";
 
@@ -44,23 +44,22 @@ export default function Ask({questions}: AskProps) {
         }
     }
 
-    const refreshAnswers = async () => {
+    const refreshAnswer = async (questionId: number) => {
+        if (!questionId) return
         setLoading(true)
-        const newQuestions = await getQuestions()
-        if ('error' in newQuestions) {
-            console.error(newQuestions.error)
-            setLoading(false)
-            return
-        }
-        setDisplayedQuestions(newQuestions)
+        const updatedQuestion = await checkForAnswer(questionId)
+        if (!updatedQuestion) return
+        const updatedQuestions = displayedQuestions.map((question) => {
+            if (question.id === questionId) {
+                return updatedQuestion
+            }
+            return question
+        })
         setLoading(false)
     }
     return (
         <div className="p-4">
             <div className="space-y-1 flex flex-col py-2 border border-gray-800">
-                <div className="">
-                    <RefreshButton onClick={() => refreshAnswers()}/>
-                </div>
                 <div className="flex flex-row w-full ml-2 py-2">
                     <Label className="text-sm leading-none w-full" htmlFor="question">Ask a question</Label>
                 </div>
@@ -89,22 +88,26 @@ export default function Ask({questions}: AskProps) {
             {displayedQuestions.map((question) => (
                 <div key={question.id}>
                     <Accordion collapsible type="single">
-                        <AccordionItem value="what-is-it">
+                        <AccordionItem value="what-is-it" className="flex flex-col">
                             <AccordionTrigger className="text-lg font-medium">{question.content}</AccordionTrigger>
                             <AccordionContent>
-                                <div className="text-base leading-6 cursor-text select-all">
-                            <pre className="whitespace-pre-wrap font-sans">
-                                {question?.answer?.content && (
-                                    question.answer.content
-                                )}
-                                {!question?.answer?.content && (
-                                    "Still waiting on answer..."
-                                )}
-                            </pre>
+                                <div className="flex">
+                                    <div className="flex flex-row mx-4 my-auto">
+                                        <RefreshButton onClick={() => refreshAnswer(question.id)}/>
+                                    </div>
+                                    <div className="text-base leading-6 cursor-text select-all flex flex-row">
+                                        <pre className="whitespace-pre-wrap font-sans">
+                                            {question?.answer?.content && (
+                                                question.answer.content
+                                            )}
+                                            {!question?.answer?.content && (
+                                                "Still waiting on answer..."
+                                            )}
+                                        </pre>
+                                    </div>
                                 </div>
-                                <p className="text-gray-500 dark:text-gray-400">
 
-                                </p>
+
                             </AccordionContent>
                         </AccordionItem>
                     </Accordion>

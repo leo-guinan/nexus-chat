@@ -20,7 +20,6 @@ export async function addThoughtToContext(contextId: number, thoughtContent: str
         }
     }
 
-    console.log("parentThoughtId", parentThoughtId)
     const thoughtData = parentThoughtId ? {
         content: thoughtContent,
         uuid: nanoid(),
@@ -53,8 +52,6 @@ export async function addThoughtToContext(contextId: number, thoughtContent: str
             }
         }
     }
-
-    console.log("thoughtData", thoughtData)
 
     const newThought = await prisma.thought.create({
         data: thoughtData
@@ -137,7 +134,6 @@ export async function addThoughtToContext(contextId: number, thoughtContent: str
         createdAt: formatDate(newThought.createdAt),
     }
 
-    console.log("createdThought", createdThought)
     return createdThought
 
 }
@@ -153,7 +149,6 @@ export async function findRelatedThoughts(initialThoughts: Thought[], thingToDo:
     }
 
     const relatedThoughts = await findBestMatchedThoughts(thingToDo, session.user.id)
-    console.log("relatedThoughts", relatedThoughts)
 
     if ('error' in relatedThoughts) {
         return {
@@ -188,7 +183,6 @@ export async function filterThoughts(contextId: number, thoughtFilter: string) {
     }
 
 
-    console.log("relatedThoughts", relatedThoughts)
     return relatedThoughts.map((relatedThought) => {
         return {
             ...relatedThought,
@@ -223,7 +217,6 @@ export async function findBestMatchedThoughts(filter: string, userId: string) {
         },
     });
 
-    console.log("relatedThoughtVectors", relatedThoughtVectors)
 
     const relatedThoughts = []
 
@@ -288,7 +281,6 @@ export const getThoughtsTwitterStyle =cache(async ()=> {
 
     return {
         thoughts: thoughts.map((thought) => {
-            console.log("thought", thought)
             return {
                 id: thought.id,
                 content: thought.content,
