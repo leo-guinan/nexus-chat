@@ -173,6 +173,7 @@ export async function sendChatMessage(sessionId: string, message: { content: str
     ]);
 
 
+    //@ts-ignore
     const internalChain = new ConversationChain({prompt, llm: model, memory: internalMemory,});
 
 
