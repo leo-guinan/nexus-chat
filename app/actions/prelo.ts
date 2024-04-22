@@ -42,6 +42,12 @@ Based on what you know so far, ask the investor a followup question to learn mor
 
  `
 
+type ClassifierResult = {
+    type: "research" | "info",
+    goal?: string
+    message?: string
+
+}
 
 export async function getQuestions() {
     const session = await auth()
@@ -325,17 +331,18 @@ export async function sendPreloChatMessage(message: { content: string, role: "us
         // @ts-ignore
         outputParser
     });
+
     const response = await runnable.invoke({
         investor_data: investorData.content,
         message: message.content
-    });
+    }) as ClassifierResult;
 
     console.log(response);
 
     if (response.type === "research") {
         const workingResponse = "I'm working on that for you."
         await history.addAIMessage(workingResponse)
-        const answer = await answerQuestion(response.goal, true, preloClient!.id)
+        const answer = await answerQuestion(response.goal ?? "", true, preloClient!.id)
         console.log("Answer", answer)
         return {
         id: nanoid(),
@@ -356,7 +363,7 @@ export async function sendPreloChatMessage(message: { content: string, role: "us
         await history.addAIMessage(result.content.toString())
         return {
             id: nanoid(),
-            content: result.content,
+            content: result.content.toString(),
             role: "assistant"
         }
     } else {
