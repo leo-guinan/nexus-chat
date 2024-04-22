@@ -75,10 +75,8 @@ export async function sendChatMessage(sessionId: string, message: { content: str
 
     await Promise.all(previousMessages.map(async (message) => {
         if (message._getType() === "human") {
-            console.log("human message", message.content.toString())
             currentMessage.input = message.content.toString();
         } else {
-            console.log("ai message", message.content.toString())
             currentMessage.output = message.content.toString();
         }
         if (currentMessage.input && currentMessage.output) {
@@ -92,19 +90,16 @@ export async function sendChatMessage(sessionId: string, message: { content: str
     }))
 
 
-// We can also utilize the predict_new_summary method directly.
     const messages = await chatPromptMemory.chatHistory.getMessages();
     const previous_summary = "";
     const predictSummary = await chatPromptMemory.predictNewSummary(
         messages,
         previous_summary
     );
-    console.log(JSON.stringify(predictSummary));
     const compressedContext = `${predictSummary}  ${message.content}.`
 
 
     const relatedThoughts = await findBestMatchedThoughts(compressedContext, session.user.id)
-    console.log("relatedThoughts", relatedThoughts)
 
     if ('error' in relatedThoughts) {
         return {

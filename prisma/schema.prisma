@@ -456,5 +456,6 @@ model PreloClient {
   clientId  Int? //used to link backend model
   preloSubmind PreloSubmind @relation(fields: [preloSubmindId], references: [id])
   preloSubmindId Int
+  uuid      String @unique
 
 }

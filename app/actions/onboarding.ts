@@ -256,7 +256,6 @@ export async function sendOnboardingChatMessage(message: { content: string, role
     const response = await onboardingChain.call({
         input: message.content
     })
-    console.log("Response", response.response)
 
     return {
         id: nanoid(),
