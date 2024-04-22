@@ -62,6 +62,7 @@ export async function sendChatMessage(sessionId: string, message: { content: str
 
     // ok, so I want to summarize the existing message history and combine it with the message to add enough context to appopriately select related thoughts
     const chatPromptMemory = new ConversationSummaryBufferMemory({
+        //@ts-ignore
         llm: model,
         returnMessages: true,
     });
