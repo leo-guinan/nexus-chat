@@ -208,6 +208,7 @@ that matter most to them.
     ]);
 
 
+    //@ts-ignore
     const externalChain = new ConversationChain({llm: model, memory: externalMemory, prompt: externalPrompt,});
 
 
