@@ -453,7 +453,7 @@ model PreloClient {
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
   name      String
-  clientId  Int? //used to link backend model
+  clientId  Int @default(1)
   preloSubmind PreloSubmind @relation(fields: [preloSubmindId], references: [id])
   preloSubmindId Int
   uuid      String @unique
