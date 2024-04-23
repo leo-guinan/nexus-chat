@@ -274,6 +274,8 @@ export async function sendPreloChatMessage(message: { content: string, role: "us
         sessionId: `${message.chatId}_prelo`,
     })
 
+    await history.addUserMessage(message.content)
+
     const preloMemory = new BufferMemory({
         chatHistory: history,
     });
@@ -442,12 +444,25 @@ export async function createPreloChat() {
         }
     }
 
+    const newClientRequest = await fetch(`${process.env.PRELO_API_URL as string}create_client/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Api-Key ${process.env.PRELO_API_KEY}`
+            },
+            body: JSON.stringify({
+                uuid: chatId,
+            })
+        })
+    const clientId = await newClientRequest.json()
+
 
     await prisma.preloClient.create({
         data: {
             preloSubmindId: user.preloSubmindId,
             uuid: chatId,
-            name: "Investor"
+            name: "Investor",
+            clientId: clientId.client_id
 
         }
 

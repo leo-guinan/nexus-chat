@@ -13,8 +13,6 @@ export interface ChatList {
 
 export function ChatList({ messages }: ChatList) {
 
-  console.log("messages", messages)
-
   if (!messages.length) {
     return null
   }
