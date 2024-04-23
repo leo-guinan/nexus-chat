@@ -417,11 +417,11 @@ model ScheduledThought {
 }
 
 model PreloSubmind {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
-  users     User[]
-  clients   PreloClient[]
+  id             Int             @id @default(autoincrement())
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime?       @updatedAt
+  users          User[]
+  clients        PreloClient[]
   preloQuestions PreloQuestion[]
 }
 
@@ -447,15 +447,38 @@ model PreloAnswer {
   questionId Int           @unique
 }
 
-
 model PreloClient {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
-  name      String
-  clientId  Int @default(1)
-  preloSubmind PreloSubmind @relation(fields: [preloSubmindId], references: [id])
+  id             Int          @id @default(autoincrement())
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime?    @updatedAt
+  name           String
+  clientId       Int          @default(1)
+  preloSubmind   PreloSubmind @relation(fields: [preloSubmindId], references: [id])
   preloSubmindId Int
-  uuid      String @unique
+  uuid           String       @unique
+}
+
+enum PreloSubmindRequestStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  ERROR
+}
+
+model PreloSubmindRequest {
+  id                  Int       @id @default(autoincrement())
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime? @updatedAt
+  investor            String?
+  firm                String?
+  thesis              String?
+  location            String?
+  website             String?
+  twitter             String?
+  linkedin            String?
+  crunchbase          String?
+  angellist           String?
+  interviewTranscript String?
+  status              PreloSubmindRequestStatus @default(PENDING)
 
 }

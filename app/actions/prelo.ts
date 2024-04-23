@@ -2,14 +2,13 @@
 
 import {nanoid, prisma} from "@/lib/utils";
 import {auth} from "@/auth";
-import {Submind, User} from "@prisma/client/edge";
+import {User} from "@prisma/client/edge";
 import {revalidateTag} from "next/cache";
 import {MongoClient} from "mongodb";
 import {MongoDBChatMessageHistory} from "@langchain/mongodb";
 import {BufferMemory} from "langchain/memory";
 import {ChatOpenAI} from "@langchain/openai";
-import {ChatPromptTemplate, MessagesPlaceholder} from "@langchain/core/prompts";
-import {RunnableWithMessageHistory} from "@langchain/core/runnables";
+import {ChatPromptTemplate} from "@langchain/core/prompts";
 import {createDocument, getDocument, updateDocument} from "@/app/actions/documents";
 import {JsonOutputFunctionsParser} from "langchain/output_parsers";
 import {createOpenAIFnRunnable} from "langchain/chains/openai_functions";
@@ -347,16 +346,16 @@ export async function sendPreloChatMessage(message: { content: string, role: "us
         const answer = await answerQuestion(response.goal ?? "", true, preloClient!.id)
         console.log("Answer", answer)
         return {
-        id: nanoid(),
-        content: workingResponse,
-        role: "assistant"
+            id: nanoid(),
+            content: workingResponse,
+            role: "assistant"
         }
     } else if (response.type === "info") {
         const updatedInvestorData = await learnAboutInvestor(message.chatId, message.content)
         const prompt = ChatPromptTemplate.fromMessages([
-        ["system", SUBMIND_RESPONSE_PROMPT],
-        ["human", "{message}"],
-    ]);
+            ["system", SUBMIND_RESPONSE_PROMPT],
+            ["human", "{message}"],
+        ]);
         const chain = prompt.pipe(model)
         const result = await chain.invoke({
             message: message.content,
@@ -423,7 +422,7 @@ export async function createPreloChat() {
     }
 
 
-    const {documentId: chatId} =    await createDocument(session.user.id, "Investor profile")
+    const {documentId: chatId} = await createDocument(session.user.id, "Investor profile")
 
     const history = new MongoDBChatMessageHistory({
         collection,
@@ -445,15 +444,15 @@ export async function createPreloChat() {
     }
 
     const newClientRequest = await fetch(`${process.env.PRELO_API_URL as string}create_client/`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Api-Key ${process.env.PRELO_API_KEY}`
-            },
-            body: JSON.stringify({
-                uuid: chatId,
-            })
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Api-Key ${process.env.PRELO_API_KEY}`
+        },
+        body: JSON.stringify({
+            uuid: chatId,
         })
+    })
     const clientId = await newClientRequest.json()
 
 
@@ -487,7 +486,7 @@ export async function createPreloChat() {
     }
 }
 
-export async function learnAboutInvestor(uuid:string, message: string) {
+export async function learnAboutInvestor(uuid: string, message: string) {
 
     const investorDocument = await getDocument(uuid)
 
@@ -519,4 +518,35 @@ export async function learnAboutInvestor(uuid:string, message: string) {
     await updateDocument(uuid, result.content.toString())
     return result.content.toString()
 
+}
+
+
+export async function requestSubmind(
+    investor: string,
+    firm: string,
+    thesis: string,
+    location: string,
+    website: string,
+    twitter: string,
+    linkedin: string,
+    crunchbase: string,
+    angellist: string,
+    interviewTranscript: string) {
+
+    await prisma.preloSubmindRequest.create({
+        data: {
+            investor,
+            firm,
+            thesis,
+            location,
+            website,
+            twitter,
+            linkedin,
+            crunchbase,
+            angellist,
+            interviewTranscript
+        }
+    })
+
+    return "Request submitted"
 }

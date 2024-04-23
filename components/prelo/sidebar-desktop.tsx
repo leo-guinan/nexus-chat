@@ -1,10 +1,9 @@
 import { Sidebar } from '@/components/sidebar'
 
 import { auth } from '@/auth'
-import { ChatHistory } from '@/components/chat-history'
-import {ContextSidebar} from "@/components/context-sidebar";
 import {isUserAdmin, userHasPrelo} from "@/app/actions/admin";
 import {PreloSidebar} from "@/components/prelo/sidebar";
+import {redirect} from "next/navigation";
 
 export async function PreloSidebarDesktop() {
   const session = await auth()
@@ -14,7 +13,11 @@ export async function PreloSidebarDesktop() {
   const hasPrelo = await userHasPrelo(session?.user?.id)
 
   if (!session?.user?.id) {
-    return null
+    redirect(`/sign-in?next=/prelo/admin`)
+  }
+
+  if (!hasPrelo) {
+    redirect(`/`)
   }
 
   return (
