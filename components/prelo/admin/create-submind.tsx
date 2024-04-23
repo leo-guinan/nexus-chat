@@ -33,9 +33,9 @@ export default function CreateSubmind() {
     setFormData({...formData, [e.target.name]: e.target.value});
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    await requestSubmind(
+    requestSubmind(
         formData.investor,
         formData.firm,
         formData.thesis,

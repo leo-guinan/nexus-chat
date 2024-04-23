@@ -6,6 +6,8 @@ import {Document} from "@pinecone-database/doc-splitter";
 import {embedDocument} from "@/app/actions/embeddings";
 import {chunkedUpsert} from "@/utils/chunkedUpsert";
 
+
+
 export async function isUserAdmin(userId?: string | null) {
     if (!userId) {
         return false
