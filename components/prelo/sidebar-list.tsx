@@ -17,6 +17,17 @@ export async function PreloSidebarList({userId: _, isAdmin, hasPrelo}: SidebarLi
     return (
         <div className="flex flex-1 flex-col overflow-hidden">
             <div className="p-8 text-center">
+
+                <Link
+                    href={`/prelo/pitch`}
+                    className={cn(
+                        buttonVariants({variant: 'ghost'}),
+                        'group w-full px-8 transition-colors hover:bg-zinc-200/40 dark:hover:bg-zinc-300/10',
+                    )}
+                >
+                    Upload Pitch Deck
+                </Link>
+
                 <Link
                     href={`/prelo/chat`}
                     className={cn(

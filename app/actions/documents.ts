@@ -5,7 +5,7 @@ import {nanoid, prisma} from "@/lib/utils";
 import {Thought} from "@/lib/types";
 import {auth} from "@/auth";
 
-export async function getDocument(documentId: string) {
+export async function getDocument(documentId: string, dbName = "myaicofounder", collectionName = "documents") {
 
     const session = await auth()
 
@@ -16,8 +16,8 @@ export async function getDocument(documentId: string) {
     }
 
     const client = await MongoClient.connect(process.env.MONGO_URL as string);
-    const db = client.db('myaicofounder');
-    const collection = db.collection('documents');
+    const db = client.db(dbName);
+    const collection = db.collection(collectionName);
     const document = await collection.findOne({uuid: documentId, userId: session.user.id});
     if (!document) {
         return {

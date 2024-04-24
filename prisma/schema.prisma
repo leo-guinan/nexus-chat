@@ -67,6 +67,7 @@ model User {
   questions          Question[]
   preloSubmind       PreloSubmind?    @relation(fields: [preloSubmindId], references: [id])
   preloSubmindId     Int?
+  pitchDeckRequests  PitchDeckRequest[]
 }
 
 model Subscription {
@@ -481,4 +482,15 @@ model PreloSubmindRequest {
   interviewTranscript String?
   status              PreloSubmindRequestStatus @default(PENDING)
 
+}
+
+
+model PitchDeckRequest {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
+  uuid      String   @unique
+  backendId Int
+  ownerId   String
+  owner    User     @relation(fields: [ownerId], references: [id])
 }

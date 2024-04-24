@@ -467,10 +467,6 @@ export async function createPreloChat() {
 
     })
 
-    console.log("Chat Id", chatId)
-
-    await createDocument(chatId, "Investor profile")
-
     const messages = await history.getMessages()
     return {
         id: chatId,
@@ -549,4 +545,64 @@ export async function requestSubmind(
     })
 
     return "Request submitted"
+}
+
+export async function getUploadUrl(filename: string): Promise<{ url: string, pitchDeckId: number } | { error: string }> {
+    const session = await auth()
+    if (!session?.user) {
+        return {
+            error: "User not found"
+        }
+    }
+    const document = await createDocument(session.user.id, "Pitch deck analysis still running...")
+
+    const url = `${process.env.PRELO_API_URL as string}get_upload_url/?filename=${filename}&uuid=${document.documentId}`
+    console.log(url)
+    const uploadUrlResponse = await fetch(url, {
+        method: 'GET',
+        headers: {
+            "Authorization": `Api-Key ${process.env.PRELO_API_KEY}`
+        }
+
+    })
+
+
+    const parsed = await uploadUrlResponse.json()
+
+    const pitchDeckRequest = await prisma.pitchDeckRequest.create({
+        data: {
+            uuid: document.documentId,
+            backendId: parsed.pitch_deck_id,
+            ownerId: session.user.id,
+        }
+    })
+    return {
+        url: parsed.upload_url,
+        pitchDeckId: pitchDeckRequest.id
+    }
+}
+
+export async function getPitchDeck(id: number) {
+    const session = await auth()
+    if (!session?.user) {
+        return {
+            error: "User not found"
+        }
+    }
+    const pitchDeckRequest = await prisma.pitchDeckRequest.findUnique({
+        where: {
+            id,
+            ownerId: session.user.id
+        }
+    })
+
+    if (!pitchDeckRequest) {
+        return {
+            error: "Pitch deck not found"
+        }
+    }
+
+    const document = await getDocument(pitchDeckRequest.uuid, "prelo")
+
+    return document
 }
