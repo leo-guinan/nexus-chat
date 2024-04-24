@@ -1,5 +1,5 @@
 'use client'
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {getUploadUrl} from "@/app/actions/prelo";
 import { redirect, useRouter } from 'next/navigation';
 
@@ -9,7 +9,16 @@ const FileUpload: React.FC = () => {
     const [uploadUrl, setUploadUrl] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [pitchDeckId, setPitchDeckId] = useState<number | null>(null);
+    const [uploadSuccess, setUploadSuccess] = useState<boolean>(false);
     const router = useRouter()
+
+
+    useEffect(() => {
+        if(uploadSuccess && pitchDeckId) {
+            console.log(pitchDeckId)
+            router.push(`/prelo/pitch/${pitchDeckId.toString()}`)
+        }
+    }, [uploadSuccess, pitchDeckId])
 
     // Handle file change event from input
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,6 +29,7 @@ const FileUpload: React.FC = () => {
             if (selectedFile.type === 'application/pdf') {
                 setLoading(true);
                 const newUploadUrl = await getUploadUrl(selectedFile.name);
+                console.log(newUploadUrl)
                 if ('error' in newUploadUrl) {
                     setErrorMessage('Error getting upload URL. Please try again.');
                     setFile(null);
@@ -57,7 +67,8 @@ const FileUpload: React.FC = () => {
 
             if (response.ok) {
                 console.log('File uploaded successfully');
-                router.push(`/pitch-deck/${pitchDeckId}`)
+                setUploadSuccess(true)
+
                 // Handle response here
             } else {
                 throw new Error('Failed to upload file');

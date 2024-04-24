@@ -554,7 +554,7 @@ export async function getUploadUrl(filename: string): Promise<{ url: string, pit
             error: "User not found"
         }
     }
-    const document = await createDocument(session.user.id, "Pitch deck analysis still running...")
+    const document = await createDocument(session.user.id, "Pitch deck analysis still running...", "prelo")
 
     const url = `${process.env.PRELO_API_URL as string}get_upload_url/?filename=${filename}&uuid=${document.documentId}`
     console.log(url)
@@ -576,6 +576,7 @@ export async function getUploadUrl(filename: string): Promise<{ url: string, pit
             ownerId: session.user.id,
         }
     })
+    console.log("Pitch deck request", pitchDeckRequest)
     return {
         url: parsed.upload_url,
         pitchDeckId: pitchDeckRequest.id
@@ -603,6 +604,6 @@ export async function getPitchDeck(id: number) {
     }
 
     const document = await getDocument(pitchDeckRequest.uuid, "prelo")
-
+    console.log("Pitch deck document", document)
     return document
 }

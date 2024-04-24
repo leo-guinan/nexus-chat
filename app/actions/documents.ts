@@ -61,10 +61,10 @@ export async function saveDocument({content, documentId, userId}: {
 }
 
 
-export async function createDocument(userId: string, content: string) {
+export async function createDocument(userId: string, content: string, dbName= "myaicofounder", collectionName = "documents") {
     const client = await MongoClient.connect(process.env.MONGO_URL as string);
-    const db = client.db('myaicofounder');
-    const collection = db.collection('documents');
+    const db = client.db(dbName);
+    const collection = db.collection(collectionName);
     const uuid = nanoid();
     await collection.insertOne({content, createdAt: new Date(), userId, uuid});
 

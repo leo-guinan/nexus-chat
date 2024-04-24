@@ -22,8 +22,9 @@ export default async function PreloUploadPitchDeckPage({ params }: PitchDeckPage
     const pitchDeck = await getPitchDeck(Number(params.id));
 
     if ('error' in pitchDeck) {
-        redirect(`/prelo/pitch/`)
+        console.log(pitchDeck.error)
+        return null
     }
 
-    return <PitchDeckAnalysis pitchDeckAnalysis={pitchDeck.content}/>
+    return <PitchDeckAnalysis pitchDeckAnalysis={pitchDeck.content} uuid={pitchDeck.uuid}/>
 }
